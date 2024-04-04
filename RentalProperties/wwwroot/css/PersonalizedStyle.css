@@ -1,0 +1,8 @@
+﻿.centered-table {
+    width: 50%; /* Set the width of the table */
+    margin: auto; /* Center the table horizontally */
+}
+
+.centered-table th,
+.centered-table td {
+    text-align: center; /* Center the content of table cells */

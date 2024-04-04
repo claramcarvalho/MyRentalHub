@@ -1,0 +1,47 @@
+﻿@model RentalProperties.Models.Rental
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Rental</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="TenantId" />
+            <input type="hidden" asp-for="ApartmentId" />
+            <input type="hidden" asp-for="FirstDayRental" />
+            <div class="form-group">
+                <label asp-for="LastDayRental" class="control-label"></label>
+                <input asp-for="LastDayRental" class="form-control" />
+                <span asp-validation-for="LastDayRental" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PriceRent" class="control-label"></label>
+                <input asp-for="PriceRent" class="form-control" />
+                <span asp-validation-for="PriceRent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RentalStatus" class="control-label"></label>
+                <select asp-for="RentalStatus" class="form-control"></select>
+                <span asp-validation-for="RentalStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

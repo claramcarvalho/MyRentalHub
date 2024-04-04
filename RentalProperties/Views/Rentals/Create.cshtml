@@ -1,0 +1,85 @@
+﻿@model RentalProperties.Models.Rental
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Rental</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TenantId" class="control-label"></label>
+                <select asp-for="TenantId" class ="form-control" asp-items="ViewBag.TenantId">
+                    
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApartmentId" class="control-label"></label>
+                <select asp-for="ApartmentId" id="apartmentId" class="form-control" asp-items="ViewBag.ApartmentsId">
+                    <option value="-1">Select an Apartment</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstDayRental" class="control-label"></label>
+                <input asp-for="FirstDayRental" class="form-control" />
+                <span asp-validation-for="FirstDayRental" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastDayRental" class="control-label"></label>
+                <input asp-for="LastDayRental" class="form-control" />
+                <span asp-validation-for="LastDayRental" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PriceRent" class="control-label"></label>
+                <input asp-for="PriceRent" id="priceRent" class="form-control" />
+                <span asp-validation-for="PriceRent" class="text-danger"></span>
+                <span ></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RentalStatus" class="control-label"></label>
+                <select asp-for="RentalStatus" class="form-control" asp-items="Html.GetEnumSelectList<StatusOfRental>()"></select>
+                <span asp-validation-for="RentalStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    $(function () {
+        $("#apartmentId").change(function () {
+            console.log("entrei no change")
+            var ap = document.getElementById("apartmentId")
+            console.log(ap.value)
+            var apartmentId = $(this).val();
+            var url = '@Url.Action("GetApartmentPrice", "Apartments")'
+            $.ajax({
+                url: url, // Substitua pela URL correta
+                type: 'GET',
+                data: { apartmentId: ap.value },
+                success: function (response) {
+                    $("#priceRent").val(response);
+                },
+                error: function () {
+                    console.log("Erro ao obter o preço do apartamento.");
+                }
+            });
+        });
+    });
+</script>

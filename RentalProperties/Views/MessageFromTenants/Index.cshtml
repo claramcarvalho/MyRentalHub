@@ -1,0 +1,54 @@
+﻿@model IEnumerable<RentalProperties.Models.MessageFromTenant>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tenant)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apartment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MessageSent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AnswerFromManager)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tenant.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apartment.ApartmentId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MessageSent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnswerFromManager)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MessageId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MessageId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MessageId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

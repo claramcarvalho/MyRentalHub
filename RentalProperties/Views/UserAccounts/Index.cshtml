@@ -1,0 +1,101 @@
+﻿@model IEnumerable<RentalProperties.UserAccount>
+
+@{
+    ViewData["Title"] = "Manage User Accounts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Manage User Accounts</h1>
+
+<div class="d-flex justify-content-between">
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <p>
+        <a asp-action="Index">Show All Users</a>
+    </p>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateCreated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <form method="get" asp-action="Search">
+            <tr style="background-color:lightgray">
+                <td>
+                    <select name="queryType" class="form-control" asp-items="Html.GetEnumSelectList<UserType>()">
+                        <option value="All">All</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="queryUsername" class="form-control" placeholder="Search Name">
+                </td>
+                <td>
+                    <input type="date" name="queryDateCreation" class="form-control">
+                </td>
+            <!--If I need DATE PICKER AGAIN    https://stackoverflow.com/questions/62049179/how-to-use-datepicker-on-mvc-core-in-asp-form-->
+                <td>
+                    <input type="text" name="queryName" class="form-control" placeholder="Search Name">
+                </td>
+                <td>
+                    <input type="text" name="queryLastName" class="form-control" placeholder="Search Last Name">
+                </td>
+                <td>
+                    <select name="queryStatus" class="form-control" asp-items="Html.GetEnumSelectList<UserStatus>()">
+                        <option value="All">All</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-outline-secondary" type="submit" id="button-search">Search</button>
+                </td>
+            </tr>
+        </form>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateCreated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserStatus)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.UserId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

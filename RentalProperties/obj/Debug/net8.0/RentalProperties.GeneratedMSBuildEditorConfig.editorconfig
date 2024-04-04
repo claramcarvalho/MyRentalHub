@@ -1,0 +1,215 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = RentalProperties
+build_property.RootNamespace = RentalProperties
+build_property.ProjectDir = C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\RentalProperties\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\RentalProperties
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Apartments/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBhcnRtZW50c1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Apartments/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBhcnRtZW50c1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Apartments/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBhcnRtZW50c1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Apartments/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBhcnRtZW50c1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Apartments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBhcnRtZW50c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Appointments/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Appointments/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Appointments/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Appointments/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Appointments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/EventInProperties/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZlbnRJblByb3BlcnRpZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/EventInProperties/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZlbnRJblByb3BlcnRpZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/EventInProperties/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZlbnRJblByb3BlcnRpZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/EventInProperties/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZlbnRJblByb3BlcnRpZXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/EventInProperties/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZlbnRJblByb3BlcnRpZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Home/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Identity/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSWRlbnRpdHlcTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Identity/Logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSWRlbnRpdHlcTG9nb3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Identity/SignUp.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSWRlbnRpdHlcU2lnblVwLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/MessageFromTenants/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZUZyb21UZW5hbnRzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/MessageFromTenants/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZUZyb21UZW5hbnRzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/MessageFromTenants/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZUZyb21UZW5hbnRzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/MessageFromTenants/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZUZyb21UZW5hbnRzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/MessageFromTenants/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZUZyb21UZW5hbnRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Properties/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGVydGllc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Properties/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGVydGllc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Properties/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGVydGllc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Properties/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGVydGllc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Properties/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGVydGllc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Rentals/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVudGFsc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Rentals/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVudGFsc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Rentals/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVudGFsc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Rentals/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVudGFsc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Rentals/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVudGFsc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/UserAccounts/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckFjY291bnRzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/UserAccounts/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckFjY291bnRzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/UserAccounts/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckFjY291bnRzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/UserAccounts/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckFjY291bnRzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/UserAccounts/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckFjY291bnRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-00510rs9w3
+
+[C:/Files/LaSalle/Cursos/Winter_2024/Web_Server/Final Project/RentalProperties/RentalProperties/Views/Shared/_Layout_Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXRfTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-uygi5444ma
