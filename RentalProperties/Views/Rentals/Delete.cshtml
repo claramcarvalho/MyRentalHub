@@ -16,13 +16,19 @@
             @Html.DisplayNameFor(model => model.Tenant)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tenant.UserId)
+            @Html.DisplayFor(model => model.Tenant.UserName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Apartment)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Apartment.ApartmentId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstDayRental)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FirstDayRental)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.LastDayRental)
@@ -45,9 +51,7 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="TenantId" />
-        <input type="hidden" asp-for="ApartmentId" />
-        <input type="hidden" asp-for="FirstDayRental" />
+        <input type="hidden" asp-for="RentalId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

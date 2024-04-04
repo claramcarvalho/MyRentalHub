@@ -37,7 +37,7 @@ namespace RentalProperties.Controllers
             }
 
             var apartment = await _context.Apartments
-                .Include(a => a.Property).Include(a=> a.Rentals)
+                .Include(a => a.Property).Include(a=> a.Rentals).ThenInclude(r=>r.Tenant)
                 .FirstOrDefaultAsync(m => m.ApartmentId == id);
             if (apartment == null)
             {

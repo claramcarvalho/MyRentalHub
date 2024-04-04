@@ -12,8 +12,8 @@ using RentalProperties.DATA;
 namespace RentalProperties.Migrations
 {
     [DbContext(typeof(RentalPropertiesDBContext))]
-    [Migration("20240404145022_ChangingIndexPropertyManager")]
-    partial class ChangingIndexPropertyManager
+    [Migration("20240404223703_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,17 +158,17 @@ namespace RentalProperties.Migrations
 
             modelBuilder.Entity("RentalProperties.Models.Rental", b =>
                 {
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(1);
+                    b.Property<int>("RentalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RentalId"));
 
                     b.Property<int>("ApartmentId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(2);
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("FirstDayRental")
-                        .HasColumnType("date")
-                        .HasColumnOrder(3);
+                        .HasColumnType("date");
 
                     b.Property<DateOnly>("LastDayRental")
                         .HasColumnType("date");
@@ -179,10 +179,14 @@ namespace RentalProperties.Migrations
                     b.Property<int>("RentalStatus")
                         .HasColumnType("int");
 
-                    b.HasKey("TenantId", "ApartmentId", "FirstDayRental")
-                        .HasName("PK_Rentals");
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RentalId");
 
                     b.HasIndex("ApartmentId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Rentals");
                 });

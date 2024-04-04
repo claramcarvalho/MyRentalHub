@@ -251,3 +251,4 @@ C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\Re
 C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\RentalProperties\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\RentalProperties\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
 C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\RentalProperties\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout_Login.cshtml.rz.scp.css
+C:\Files\LaSalle\Cursos\Winter_2024\Web_Server\Final Project\RentalProperties\RentalProperties\obj\Debug\net8.0\RentalProperties.sourcelink.json

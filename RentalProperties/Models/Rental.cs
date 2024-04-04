@@ -8,23 +8,20 @@ namespace RentalProperties.Models
     public class Rental
     {
         [Key]
-        [Column (Order = 1)]
+        public int RentalId { get; set; }
+        
         [DisplayName("Tenant")]
         public int TenantId { get; set; }
 
         [DisplayName("Tenant")]
         public virtual UserAccount? Tenant { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
         [DisplayName("Apartment")]
         public int ApartmentId { get; set; }
 
         [DisplayName("Apartment")]
         public virtual Apartment? Apartment { get; set; }
 
-        [Key]
-        [Column(Order = 3)]
         [DataType(DataType.Date)]
         [DisplayName("First Day of Contract")]
         public DateOnly FirstDayRental { get; set; }
@@ -42,11 +39,8 @@ namespace RentalProperties.Models
 
     public enum StatusOfRental
     {
-        Active,
-        Scheduled,
+        Signed,
         Pending,
-        Expired,
-        Terminated,
-        RenewalPeriod
+        Terminated
     }
 }

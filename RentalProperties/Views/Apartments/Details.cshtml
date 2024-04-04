@@ -5,60 +5,118 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>Apartment Details</h1>
 
 <div>
     <h4>Apartment @Html.DisplayFor(model => model.ApartmentNumber)</h4>
     <hr />
     <span class="fw-bold">@Html.DisplayNameFor(model => model.Property): </span>
     <span>@Html.DisplayFor(model => model.Property.PropertyName)</span>
-
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.NbOfBeds)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NbOfBaths)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NbOfParkingSpots)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AnimalsAccepted)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => model.NbOfBeds)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.NbOfBaths)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.NbOfParkingSpots)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.AnimalsAccepted)
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Property)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Property.PropertyName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ApartmentNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApartmentNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NbOfBeds)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NbOfBeds)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NbOfBaths)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NbOfBaths)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NbOfParkingSpots)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NbOfParkingSpots)
-        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.PriceAnnounced)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.PriceAnnounced)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AnimalsAccepted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AnimalsAccepted)
-        </dd>
     </dl>
 </div>
 <div>
+    <hr style="width:50%" />
+    <h5 class="d-inline">History of Rentals</h5>
+    <span>
+        <a asp-controller="Rentals" asp-action="Create" asp-route-apartmentId="@Model?.ApartmentId">Add</a>
+    </span>
+    @if (Model.Rentals != null && Model.Rentals.Any())
+    {
+        <table class="table centered-table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().FirstDayRental)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().LastDayRental)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().PriceRent)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().Tenant.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().RentalStatus)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rental in Model.Rentals.OrderBy(r=>r.FirstDayRental).ToList())
+                {
+                    <tr>
+                        <td>
+                            @(rental.FirstDayRental)
+                        </td>
+                        <td>
+                            @(rental.LastDayRental)
+                        </td>
+                        <td>
+                            @(rental.PriceRent)
+                        </td>
+                        <td>
+                            @(rental.Tenant.FullName)
+                        </td>
+                        <td>
+                            @(rental.RentalStatus)
+                        </td>
+                        <td>
+                            <a asp-controller="Rentals" asp-action="Details" asp-route-id="@rental">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>There is no Rental History for this apartment.</p>
+    }
+</div>
+<div>
     <a asp-action="Edit" asp-route-id="@Model?.ApartmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">View List of Apartments</a>
 </div>

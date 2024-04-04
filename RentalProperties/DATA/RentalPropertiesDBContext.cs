@@ -89,8 +89,6 @@ namespace RentalProperties.DATA
 
             modelBuilder.Entity<Rental>(entity =>
             {
-                entity.HasKey(r => new { r.TenantId, r.ApartmentId, r.FirstDayRental }).HasName("PK_Rentals");
-
                 entity.Property(e => e.PriceRent).HasColumnType("numeric(8, 2)");
 
                 entity.HasOne(d => d.Apartment).WithMany(p => p.Rentals)

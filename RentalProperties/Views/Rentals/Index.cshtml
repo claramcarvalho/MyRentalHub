@@ -29,7 +29,7 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Apartment)
-            </th> 
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.FirstDayRental)
             </th>
@@ -50,78 +50,79 @@
     </thead>
     <tbody>
         <form method="get" asp-action="Search">
-            <tr style="background-color:lightgray">
-                <td>
+        <tr style="background-color:lightgray">
+            <td>
                 <input type="number" name="queryUserId" class="form-control" placeholder="Search ID" style="font-size:10px">
-                </td>
-                <td>
+            </td>
+            <td>
                 <input type="text" name="queryUserName" class="form-control" placeholder="Search Name" style="font-size:10px">
-                </td>
-                <td>
+            </td>
+            <td>
                 <select name="queryProperty" class="form-control" asp-items="@((SelectList)ViewData["Properties"])" style="font-size:10px">
-                        <option value="All">All</option>
-                    </select>
-                </td>
-                <td>
+                    <option value="All">All</option>
+                </select>
+            </td>
+            <td>
                 <input type="text" name="queryApNb" class="form-control" placeholder="Search Apt Number" style="font-size:10px">
             </td>
-                <td>
+            <td>
                 <input type="date" name="queryFDate" class="form-control" style="font-size:10px">
-                </td>
-                <td>
+            </td>
+            <td>
                 <input type="date" name="queryLDate" class="form-control" style="font-size:10px">
-                </td>
-                <td>
+            </td>
+            <td>
                 <input type="number" name="queryActualPrice" class="form-control" placeholder="Search Price" style="font-size:10px">
-                </td>
-                <td>
+            </td>
+            <td>
                 <input type="number" name="queryAnnouncedPrice" class="form-control" placeholder="Search Price" style="font-size:10px">
-                </td>
-                <td>
+            </td>
+            <td>
                 <select name="queryRentalStatus" class="form-control" asp-items="Html.GetEnumSelectList<StatusOfRental>()" style="font-size:10px">
-                        <option value="All">All</option>
-                    </select>
-                </td>
-                <td>
-                    <button class="btn btn-outline-secondary" type="submit" id="button-search">Search</button>
-                </td>
-            </tr>
-        </form>
-        @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tenant.UserId)
+                    <option value="All">All</option>
+                </select>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Tenant.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apartment.Property.PropertyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstDayRental)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastDayRental)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PriceRent)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apartment.PriceAnnounced)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RentalStatus)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                <button class="btn btn-outline-secondary" type="submit" id="button-search">Search</button>
             </td>
         </tr>
-}
+        </form>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tenant.UserId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tenant.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Apartment.Property.PropertyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstDayRental)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastDayRental)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PriceRent)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Apartment.PriceAnnounced)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RentalStatus)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
