@@ -46,7 +46,7 @@ namespace RentalProperties.Controllers
             }
 
             var rental = await _context.Rentals
-                .Include(r => r.Apartment)
+                .Include(r => r.Apartment).ThenInclude(a=> a.Property)
                 .Include(r => r.Tenant)
                 .FirstOrDefaultAsync(m => m.RentalId == id);
             if (rental == null)
@@ -62,19 +62,10 @@ namespace RentalProperties.Controllers
         public IActionResult Create()
         {
             //Creatting list of Apartments
-            List<SelectListItem> list = new List<SelectListItem>();
-            foreach (var item in _context.Apartments
-                .Include(a => a.Property))
-            {
-                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
-                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
-                list.Add(selectListItem);
-            }
-            SelectList listOfApartments = new SelectList(list, "Value", "Text");
-            ViewData["ApartmentsId"] = listOfApartments;
+            ViewData["ApartmentsId"] = GetApartments();
 
             //Creating list of Tenants
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts.Where(u => u.UserType == UserType.Tenant), "UserId", "FullName");
+            ViewData["TenantId"] = GetTenants();
 
             return View();
         }
@@ -84,20 +75,10 @@ namespace RentalProperties.Controllers
         public IActionResult Create(int apartmentId)
         {
             //Creatting list of Apartments
-            List<SelectListItem> list = new List<SelectListItem>();
-            foreach (var item in _context.Apartments
-                .Include(a => a.Property)
-                .Where(a => a.ApartmentId == apartmentId))
-            {
-                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
-                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
-                list.Add(selectListItem);
-            }
-            SelectList listOfApartments = new SelectList(list, "Value", "Text");
-            ViewData["ApartmentsId"] = listOfApartments;
+            ViewData["ApartmentsId"] = GetApartments(apartmentId);
 
             //Creating list of Tenants
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts.Where(u => u.UserType == UserType.Tenant), "UserId", "FullName");
+            ViewData["TenantId"] = GetTenants();
 
             return View();
         }
@@ -111,20 +92,56 @@ namespace RentalProperties.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool dataOk = true;
+                List<string> errors = new List<string>();
+                if (rental.ApartmentId == -1)
+                {
+                    errors.Add("Please select an apartment!");
+                    dataOk = false;
+                }
+                if (rental.LastDayRental<rental.FirstDayRental)
+                {
+                    errors.Add("Last Day of Rental can't be before First Day of Rental.");
+                    dataOk = false;
+                }
+                if (rental.PriceRent<0)
+                {
+                    errors.Add("The price of the rent can't be negative!");
+                    dataOk = false;
+                }
+                if (rental.PriceRent == 0)
+                {
+                    errors.Add("The price of the rent can't be zero!");
+                    dataOk = false;
+                }
+                if (RentalInApartmentWithSameFirstDay(rental))
+                {
+                    errors.Add("This apartment has already a rental that begins in the same day! Choose another day!");
+                    dataOk = false;
+                }
+                if (RentalInApartmentWithOverlappingDates(rental))
+                {
+                    errors.Add("This apartment has already a rental which dates overlap the chosen dates! Please verify before adding.");
+                    dataOk = false;
+                }
+                if (!dataOk)
+                {
+                    ViewData["ErrorMessage"] = errors;
+                    if (EndsWithANumber())
+                        ViewData["ApartmentsId"] = GetApartments(rental.ApartmentId);
+                    else ViewData["ApartmentsId"] = GetApartments();
+                    ViewData["TenantId"] = GetTenants();
+                    return View(rental);
+                }
                 _context.Add(rental);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            List<SelectListItem> listOfApartments = new List<SelectListItem>();
-            foreach (var item in _context.Apartments)
-            {
-                string text = item.ApartmentId.ToString() + " - " + item.ApartmentNumber.ToString() + item.Property.PropertyName.ToString();
-                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
-                listOfApartments.Add(selectListItem);
-            }
 
-            ViewData["ApartmentsId"] = listOfApartments;
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", rental.TenantId);
+            if (EndsWithANumber()) 
+                ViewData["ApartmentsId"] = GetApartments(rental.ApartmentId);
+                else ViewData["ApartmentsId"] = GetApartments();
+            ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
 
@@ -141,8 +158,8 @@ namespace RentalProperties.Controllers
             {
                 return NotFound();
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId", rental.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserName", rental.TenantId);
+            ViewData["ApartmentId"] = GetApartments(rental.ApartmentId);
+            ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
 
@@ -178,8 +195,8 @@ namespace RentalProperties.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId", rental.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserName", rental.TenantId);
+            ViewData["ApartmentId"] = GetApartments(id);
+            ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
 
@@ -192,7 +209,7 @@ namespace RentalProperties.Controllers
             }
 
             var rental = await _context.Rentals
-                .Include(r => r.Apartment)
+                .Include(r => r.Apartment).ThenInclude(a=> a.Property)
                 .Include(r => r.Tenant)
                 .FirstOrDefaultAsync(m => m.RentalId == id);
             if (rental == null)
@@ -288,7 +305,78 @@ namespace RentalProperties.Controllers
             {
                 filteredStatus = filteredStatus.Where(u => u.RentalStatus == (StatusOfRental)Enum.Parse(typeof(StatusOfRental), queryRentalStatus)).ToList();
             }
+
+            var listProperties = _context.Properties;
+            ViewData["Properties"] = new SelectList(listProperties, "PropertyId", "PropertyName");
             return View("Index", filteredStatus);
+        }
+
+        private SelectList GetApartments()
+        {
+            //Creatting list of Apartments
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (var item in _context.Apartments
+                .Include(a => a.Property))
+            {
+                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
+                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
+                list.Add(selectListItem);
+            }
+            SelectList listOfApartments = new SelectList(list, "Value", "Text");
+
+            return listOfApartments;
+        }
+
+        private SelectList GetApartments(int apartmentId)
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (var item in _context.Apartments
+                .Include(a => a.Property)
+                .Where(a => a.ApartmentId == apartmentId))
+            {
+                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
+                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
+                list.Add(selectListItem);
+            }
+            SelectList listOfApartments = new SelectList(list, "Value", "Text");
+
+            return listOfApartments;
+        }
+
+        private SelectList GetTenants()
+        {
+            return new SelectList(_context.UserAccounts.Where(u => u.UserType == UserType.Tenant), "UserId", "FullName");
+        }
+
+        private bool EndsWithANumber()
+        {
+            var referer = Request.Headers["Referer"].ToString();
+            bool endsWithNumber = char.IsDigit(referer[referer.Length - 1]);
+            return endsWithNumber;
+        }
+
+        private bool RentalInApartmentWithSameFirstDay(Rental newRental)
+        {
+            if (_context.Rentals.Where(r => 
+                r.ApartmentId == newRental.ApartmentId && 
+                r.FirstDayRental == newRental.FirstDayRental)
+                .Any())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool RentalInApartmentWithOverlappingDates(Rental newRental)
+        {
+            if (_context.Rentals
+            .Any(r =>
+                (newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
+                (newRental.LastDayRental >= r.FirstDayRental && newRental.LastDayRental <= r.LastDayRental)))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

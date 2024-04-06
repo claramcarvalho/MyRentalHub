@@ -118,9 +118,9 @@
                     @Html.DisplayFor(modelItem => item.RentalStatus)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    <a asp-action="Edit" asp-route-id="@item.RentalId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.RentalId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.RentalId">Delete</a>
                 </td>
             </tr>
         }

@@ -9,6 +9,16 @@
 
 <h4>Rental</h4>
 <hr />
+@if (ViewData["ErrorMessage"] != null)
+{
+    List<string> errors = (List<string>)ViewData["ErrorMessage"];
+    foreach (string error in errors)
+    {
+        <div class="text-danger">
+            @error
+        </div>
+    }
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -19,7 +29,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="ApartmentId" class="control-label"></label>
-                <select asp-for="ApartmentId" class ="form-control" asp-items="ViewBag.ApartmentId"></select>
+                <select asp-for="ApartmentId" id="apartmentId" class="form-control" asp-items="ViewBag.ApartmentsId">
+                    <option value="-1">Select an Apartment</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="FirstDayRental" class="control-label"></label>
@@ -33,12 +45,13 @@
             </div>
             <div class="form-group">
                 <label asp-for="PriceRent" class="control-label"></label>
-                <input asp-for="PriceRent" class="form-control" />
+                <input asp-for="PriceRent" id="priceRent" class="form-control" />
                 <span asp-validation-for="PriceRent" class="text-danger"></span>
+                <span></span>
             </div>
             <div class="form-group">
                 <label asp-for="RentalStatus" class="control-label"></label>
-                <select asp-for="RentalStatus" class="form-control"></select>
+                <select asp-for="RentalStatus" class="form-control" asp-items="Html.GetEnumSelectList<StatusOfRental>()"></select>
                 <span asp-validation-for="RentalStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,3 +68,33 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+    $(function () {
+
+        function getApartmentPrice(apartmentId) {
+            var url = '@Url.Action("GetApartmentPrice", "Apartments")';
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { apartmentId: apartmentId },
+                success: function (response) {
+                    $("#priceRent").val(response);
+                },
+                error: function () {
+                    console.log("Erro ao obter o preço do apartamento.");
+                }
+            });
+        }
+
+        // Evento de mudança no select #apartmentId
+        $("#apartmentId").change(function () {
+            var apartmentId = $(this).val();
+            getApartmentPrice(apartmentId);
+        });
+
+        // Recuperar o preço do apartamento no carregamento da página
+        var apartmentIdOnLoad = $("#apartmentId").val();
+        getApartmentPrice(apartmentIdOnLoad);
+    });
+</script>
