@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using RentalProperties.DATA;
 using RentalProperties.Models;
 
@@ -78,40 +79,40 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ApartmentId,PropertyId,ApartmentNumber,NbOfBeds,NbOfBaths,NbOfParkingSpots,PriceAnnounced,AnimalsAccepted")] Apartment apartment)
+        public async Task<IActionResult> Create([Bind("ApartmentId,PropertyId,ApartmentNumber,NbOfBeds,NbOfBaths,NbOfParkingSpots,PriceAnnounced,AnimalsAccepted")] Apartment apartment, bool confirmationStatus)
         {
             if (ModelState.IsValid)
             {
-                bool apartmentExists = _context.Apartments.Where(a => 
-                    a.ApartmentNumber == apartment.ApartmentNumber && 
-                    a.PropertyId == apartment.PropertyId).Any();
-
-                //checking if ap nb is unique
-                if (!apartmentExists)
+                bool dataOk = true;
+                List<string> errors = new List<string>();
+                if (ApartmentExists(apartment))
                 {
-                    _context.Add(apartment);
-                    await _context.SaveChangesAsync();
-
-                    var referer = Request.Headers["Referer"].ToString();
-                    bool endsWithNumber = char.IsDigit(referer[referer.Length - 1]);
-
-                    if (endsWithNumber)
-                    {
-                        return RedirectToAction("Index", "Properties");
-                    }
-                    return RedirectToAction(nameof(Index));
+                    errors.Add("This Property already has an apartment with that number. Please use an unique apartment number.");
+                    dataOk = false;
                 }
-                ViewData["ErrorMessage"] = "This Property already has an apartment with that number. Please use an unique apartment number.";
+                if (apartment.PriceAnnounced == 0 && confirmationStatus == false)
+                {
+                    ViewData["ShowConfirmation"] = true;
+                    ViewBag.ConfirmationMessage = "You are defining the price as ZERO. Do you wish to continue?";
+                    ViewData["PropertyId"] = GetListOfProperties(apartment);
+                    return View(apartment);
+                }
+                if (!dataOk)
+                {
+                    ViewData["PropertyId"] = GetListOfProperties(apartment);
+                    ViewData["ErrorMessage"] = errors;
+                    return View(apartment);
+                }
 
-                var propertiesFromDatabase = _context.Properties;
-                ViewData["PropertyId"] = new SelectList(
-                    propertiesFromDatabase,
-                    "PropertyId",
-                    "PropertyName");
-
-                return View(apartment);
+                _context.Add(apartment);
+                await _context.SaveChangesAsync();
+                if (EndsWithANumber())
+                {
+                    return RedirectToAction("Index", "Properties");
+                }
+                return RedirectToAction(nameof(Index));
             }
-            ViewData["PropertyId"] = new SelectList(_context.Properties, "PropertyId", "PropertyId", apartment.PropertyId);
+            ViewData["PropertyId"] = GetListOfProperties(apartment);
             return View(apartment);
         }
 
@@ -213,6 +214,46 @@ namespace RentalProperties.Controllers
             // Lógica para recuperar o preço do aluguel do apartamento com o ID especificado
             var price = _context.Apartments.Where(a => a.ApartmentId == apartmentId).Select(a => a.PriceAnnounced).FirstOrDefault();
             return Json(price);
+        }
+
+        private bool ApartmentExists(Apartment apartment)
+        {
+            return _context.Apartments.Where(a =>
+                    a.ApartmentNumber == apartment.ApartmentNumber &&
+                    a.PropertyId == apartment.PropertyId).Any();
+        }
+
+        private bool EndsWithANumber()
+        {
+            var referer = Request.Headers["Referer"].ToString();
+            bool endsWithNumber = char.IsDigit(referer[referer.Length - 1]);
+            return endsWithNumber;
+        }
+
+        private SelectList GetListOfProperties(Apartment apartment)
+        {
+            if (EndsWithANumber())
+                return GetProperties(apartment.PropertyId);
+            else return GetProperties();
+        }
+
+        private SelectList GetProperties()
+        {
+            var propertiesFromDatabase = _context.Properties;
+            return new SelectList(
+                propertiesFromDatabase,
+                "PropertyId",
+                "PropertyName");
+        }
+
+        private SelectList GetProperties(int propertyId)
+        {
+            var propertiesFromDatabase = _context.Properties
+                .Where(p=> p.PropertyId == propertyId);
+            return new SelectList(
+                propertiesFromDatabase,
+                "PropertyId",
+                "PropertyName");
         }
     }
 }

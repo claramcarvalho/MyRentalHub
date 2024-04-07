@@ -22,6 +22,7 @@ namespace RentalProperties
         public string AddressStreet { get; set; } = null!;
 
         [DisplayName("Address: Postal Code")]
+        [RegularExpression(@"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$", ErrorMessage = "Postal Code must be in the correct format: A1A 1A1.")]
         public string PostalCode { get; set; } = null!;
 
         [DisplayName("Address: City")]

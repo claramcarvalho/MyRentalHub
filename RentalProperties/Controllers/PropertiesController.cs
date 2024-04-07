@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RentalProperties;
 using RentalProperties.DATA;
+using RentalProperties.Models;
 
 namespace RentalProperties.Controllers
 {
@@ -77,16 +78,28 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PropertyId,PropertyName,AddressNumber,AddressStreet,PostalCode,City,Neighbourhood,ManagerId")] Property @property)
+        public async Task<IActionResult> Create([Bind("PropertyId,PropertyName,AddressNumber,AddressStreet,PostalCode,City,Neighbourhood,ManagerId")] Property property)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(@property);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                bool propertyNameAlreadyExists = _context.Properties.Where(p =>
+                    p.PropertyName == property.PropertyName).Any();
+
+                if (!propertyNameAlreadyExists)
+                {
+                    property.PostalCode = property.PostalCode.ToUpper();
+                    _context.Add(property);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewData["ErrorMessage"] = "There is already a Property with that same name! Please choose a different name.";
+                ViewData["ManagerId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", property.ManagerId);
+                return View(property);
+
             }
-            ViewData["ManagerId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", @property.ManagerId);
-            return View(@property);
+            ViewData["ManagerId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", property.ManagerId);
+            return View(property);
         }
 
         // GET: Properties/Edit/5

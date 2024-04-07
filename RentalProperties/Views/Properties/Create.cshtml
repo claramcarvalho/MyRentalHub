@@ -9,6 +9,16 @@
 
 <h4>Property</h4>
 <hr />
+@if (ViewData["ErrorMessage"] != null)
+{
+    List<string> errors = (List<string>)ViewData["ErrorMessage"];
+    foreach (string error in errors)
+    {
+        <div class="text-danger">
+            @error
+        </div>
+    }
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -47,6 +57,7 @@
                 <label asp-for="ManagerId" class="control-label"></label>
                 <select asp-for="ManagerId" class ="form-control" asp-items="ViewBag.ManagerId"></select>
             </div>
+            <input type="hidden" id="confirmationStatus" name="confirmationStatus" value="false" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -61,3 +72,16 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<!-- Include the partial view for the confirmation modal -->
+@Html.Partial("_ConfirmationModal")
+
+<!-- JavaScript to show the modal -->
+<script>
+    $(document).ready(function () {
+        var showConfirmationModal = '@ViewBag.ShowConfirmation';
+        if (showConfirmationModal.toLowerCase() === 'true') {
+            $('#confirmationModal').modal('show');
+        }
+    });
+</script>

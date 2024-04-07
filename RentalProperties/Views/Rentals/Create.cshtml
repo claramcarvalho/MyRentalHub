@@ -54,6 +54,7 @@
                 <select asp-for="RentalStatus" class="form-control" asp-items="Html.GetEnumSelectList<StatusOfRental>()"></select>
                 <span asp-validation-for="RentalStatus" class="text-danger"></span>
             </div>
+            <input type="hidden" id="confirmationStatus" name="confirmationStatus" value="false" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -96,5 +97,18 @@
         // Recuperar o preço do apartamento no carregamento da página
         var apartmentIdOnLoad = $("#apartmentId").val();
         getApartmentPrice(apartmentIdOnLoad);
+    });
+</script>
+
+<!-- Include the partial view for the confirmation modal -->
+@Html.Partial("_ConfirmationModal")
+
+<!-- JavaScript to show the modal -->
+<script>
+    $(document).ready(function () {
+        var showConfirmationModal = '@ViewBag.ShowConfirmation';
+        if (showConfirmationModal.toLowerCase() === 'true') {
+            $('#confirmationModal').modal('show');
+        }
     });
 </script>

@@ -30,17 +30,17 @@
             </div>
             <div class="form-group">
                 <label asp-for="NbOfBeds" class="control-label"></label>
-                <input asp-for="NbOfBeds" class="form-control" />
+                <input asp-for="NbOfBeds" class="form-control" type="number"/>
                 <span asp-validation-for="NbOfBeds" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NbOfBaths" class="control-label"></label>
-                <input asp-for="NbOfBaths" class="form-control" />
+                <input asp-for="NbOfBaths" class="form-control" type="number"/>
                 <span asp-validation-for="NbOfBaths" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NbOfParkingSpots" class="control-label"></label>
-                <input asp-for="NbOfParkingSpots" class="form-control" />
+                <input asp-for="NbOfParkingSpots" class="form-control" type="number"/>
                 <span asp-validation-for="NbOfParkingSpots" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -53,6 +53,7 @@
                     <input class="form-check-input" asp-for="AnimalsAccepted" /> @Html.DisplayNameFor(model => model.AnimalsAccepted)
                 </label>
             </div>
+            <input type="hidden" id="confirmationStatus" name="confirmationStatus" value="false" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -68,3 +69,16 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<!-- Include the partial view for the confirmation modal -->
+@Html.Partial("_ConfirmationModal")
+
+<!-- JavaScript to show the modal -->
+<script>
+    $(document).ready(function () {
+        var showConfirmationModal = '@ViewBag.ShowConfirmation';
+        if (showConfirmationModal.toLowerCase() === 'true') {
+            $('#confirmationModal').modal('show');
+        }
+    });
+</script>

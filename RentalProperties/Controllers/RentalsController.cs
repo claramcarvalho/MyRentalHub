@@ -67,6 +67,8 @@ namespace RentalProperties.Controllers
             //Creating list of Tenants
             ViewData["TenantId"] = GetTenants();
 
+            ViewData["ShowConfirmation"] = false;
+
             return View();
         }
 
@@ -80,6 +82,8 @@ namespace RentalProperties.Controllers
             //Creating list of Tenants
             ViewData["TenantId"] = GetTenants();
 
+            ViewData["ShowConfirmation"] = false;
+
             return View();
         }
 
@@ -88,7 +92,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RentalId,TenantId,ApartmentId,FirstDayRental,LastDayRental,PriceRent,RentalStatus")] Rental rental)
+        public async Task<IActionResult> Create([Bind("RentalId,TenantId,ApartmentId,FirstDayRental,LastDayRental,PriceRent,RentalStatus")] Rental rental, bool confirmationStatus)
         {
             if (ModelState.IsValid)
             {
@@ -102,11 +106,6 @@ namespace RentalProperties.Controllers
                 if (rental.LastDayRental<rental.FirstDayRental)
                 {
                     errors.Add("Last Day of Rental can't be before First Day of Rental.");
-                    dataOk = false;
-                }
-                if (rental.PriceRent<0)
-                {
-                    errors.Add("The price of the rent can't be negative!");
                     dataOk = false;
                 }
                 if (rental.PriceRent == 0)
@@ -124,23 +123,30 @@ namespace RentalProperties.Controllers
                     errors.Add("This apartment has already a rental which dates overlap the chosen dates! Please verify before adding.");
                     dataOk = false;
                 }
+                if (TenantWithSameFirstDayOfRental(rental) && confirmationStatus==false)
+                {
+                    ViewData["ShowConfirmation"] = true;
+                    ViewBag.ConfirmationMessage = "This tenant has already a rental that starts in the same day. Do you wish to continue?";
+                    ViewData["ApartmentsId"] = GetListOfApartments(rental);
+                    ViewData["TenantId"] = GetTenants();
+                    return View(rental);
+                }
                 if (!dataOk)
                 {
                     ViewData["ErrorMessage"] = errors;
-                    if (EndsWithANumber())
-                        ViewData["ApartmentsId"] = GetApartments(rental.ApartmentId);
-                    else ViewData["ApartmentsId"] = GetApartments();
+                    ViewData["ApartmentsId"] = GetListOfApartments(rental);
                     ViewData["TenantId"] = GetTenants();
                     return View(rental);
                 }
                 _context.Add(rental);
                 await _context.SaveChangesAsync();
+                if (EndsWithANumber())
+                {
+                    return RedirectToAction("Index", "Apartments");
+                }
                 return RedirectToAction(nameof(Index));
             }
-
-            if (EndsWithANumber()) 
-                ViewData["ApartmentsId"] = GetApartments(rental.ApartmentId);
-                else ViewData["ApartmentsId"] = GetApartments();
+            ViewData["ApartmentsId"] = GetListOfApartments(rental);
             ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
@@ -343,6 +349,17 @@ namespace RentalProperties.Controllers
             return listOfApartments;
         }
 
+        private SelectList GetListOfApartments(Rental rental)
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            SelectList listOfApartments = new SelectList(list, "Value", "Text");
+            if (EndsWithANumber())
+                listOfApartments = GetApartments(rental.ApartmentId);
+            else listOfApartments = GetApartments();
+
+            return listOfApartments;
+        }
+
         private SelectList GetTenants()
         {
             return new SelectList(_context.UserAccounts.Where(u => u.UserType == UserType.Tenant), "UserId", "FullName");
@@ -369,10 +386,25 @@ namespace RentalProperties.Controllers
 
         private bool RentalInApartmentWithOverlappingDates(Rental newRental)
         {
+            var overlaps = _context.Rentals
+            .FirstOrDefault(r =>
+                ((newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
+                (newRental.LastDayRental >= r.FirstDayRental && newRental.LastDayRental <= r.LastDayRental)) &&
+                newRental.ApartmentId == r.ApartmentId);
+            
+            if (overlaps!=null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool TenantWithSameFirstDayOfRental(Rental newRental)
+        {
             if (_context.Rentals
-            .Any(r =>
-                (newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
-                (newRental.LastDayRental >= r.FirstDayRental && newRental.LastDayRental <= r.LastDayRental)))
+                .Any(r => 
+                    r.TenantId == newRental.TenantId &&
+                    r.FirstDayRental == newRental.FirstDayRental))
             {
                 return true;
             }

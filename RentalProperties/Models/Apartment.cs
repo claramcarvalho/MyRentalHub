@@ -19,15 +19,19 @@ namespace RentalProperties.Models
         [DisplayName("Apartment Number")]
         public string ApartmentNumber { get; set; } = null!;
 
+        [Range(0, int.MaxValue, ErrorMessage = "Number of bedrooms must be non-negative.")]
         [DisplayName("Number of Beds")]
         public int NbOfBeds { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Number of bathrooms must be at least one.")]
         [DisplayName("Number of Bathrooms")]
         public int NbOfBaths { get; set; }
 
+        [Range(0, int.MaxValue, ErrorMessage = "Number of parking spots must be non-negative.")]
         [DisplayName("Number of Parking Spots")]
         public int NbOfParkingSpots { get; set; }
 
+        [Range(0, double.MaxValue, ErrorMessage = "Price must be non-negative.")]
         [DisplayName("Price of Announced Rent")]
         public decimal PriceAnnounced { get; set; }
 
