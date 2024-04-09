@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<RentalProperties.Models.Rental>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List of Rentals";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>List of Rentals</h1>
 
 <div class="d-flex justify-content-between">
     <p>
@@ -58,7 +58,7 @@
                 <input type="text" name="queryUserName" class="form-control" placeholder="Search Name" style="font-size:10px">
             </td>
             <td>
-                <select name="queryProperty" class="form-control" asp-items="@((SelectList)ViewData["Properties"])" style="font-size:10px">
+                <select name="queryProperty" class="form-control" asp-items="ViewBag.Properties" style="font-size:10px">
                     <option value="All">All</option>
                 </select>
             </td>

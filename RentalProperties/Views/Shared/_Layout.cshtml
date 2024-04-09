@@ -57,6 +57,12 @@
                                     </ul>
                                 </li>
                             }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Apartments" asp-action="Index">Search Apartments</a>
+                                </li>
+                            }
                         </ul>
                     </div>
                     <div class="collapse d-inline-flex justify-content-between">

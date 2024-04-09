@@ -11,9 +11,13 @@
 <hr />
 @if (ViewData["ErrorMessage"] != null)
 {
-    <div class="text-danger">
-        @ViewData["ErrorMessage"]
-    </div>
+    List<string> errors = (List<string>)ViewData["ErrorMessage"];
+    foreach (string error in errors)
+    {
+        <div class="text-danger">
+            @error
+        </div>
+    }
 }
 <div class="row">
     <div class="col-md-4">

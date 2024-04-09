@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<RentalProperties.Models.Apartment>
-
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 @{
     ViewData["Title"] = "List of Apartments";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,37 +8,80 @@
 
 <h1>List of Apartments</h1>
 
-<p>
-    <a asp-action="Create">Create New Apartment</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Property)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApartmentNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NbOfBeds)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NbOfBaths)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NbOfParkingSpots)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PriceAnnounced)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AnimalsAccepted)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+@if ((await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded)
+{
+    <p>
+        <a asp-action="Create">Create New Apartment</a>
+    </p>
+}
+<form method="get" asp-action="Search">
+    <dl class="row">
+        <dt class="col-sm-2">
+            Select Moving Date
+        </dt>
+        <dd class="col-sm-2">
+            <input type="date" name="queryMDate" class="form-control"></input>
+        </dd>
+        <dd class="col-sm-4">
+            <button class="btn btn-outline-secondary" type="submit" id="button-filter">Filter Available Apartments</button>
+        </dd>
+    </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Property)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ApartmentNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NbOfBeds)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NbOfBaths)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NbOfParkingSpots)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PriceAnnounced)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AnimalsAccepted)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background-color:lightgray">
+                <td>
+                    <select name="queryProperty" class="form-control" asp-items="ViewBag.Properties">
+                        <option value="All">All</option>
+                    </select>
+                </td>
+                <td>
+                </td>
+                <td>
+                    <input type="number" name="queryNbBed" class="form-control">
+                </td>
+                <td>
+                    <input type="number" name="queryNbBath" class="form-control">
+                </td>
+                <td>
+                    <input type="number" name="queryNbParking" class="form-control">
+                </td>
+                <td>
+                    <input type="number" name="queryPrice" class="form-control">
+                </td>
+                <td>
+                    <select name="queryAnimals" class="form-control">
+                        <option value="true">True</option>
+                        <option value="false">True</option>
+                    </select>
+                </td>
+                <td></td>
+            </tr>
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -62,11 +106,20 @@
                 @Html.DisplayFor(modelItem => item.AnimalsAccepted)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ApartmentId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ApartmentId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ApartmentId">Delete</a>
+                @{
+                    var auth = (await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded; 
+                }
+                @if (auth)
+                {<a asp-action="Edit" asp-route-id="@item.ApartmentId">Edit</a>
+                <text> | </text> }
+                @if (auth)
+                {<a asp-action="Details" asp-route-id="@item.ApartmentId">Details</a>
+                <text> | </text> }
+                @if (auth)
+                {<a asp-action="Delete" asp-route-id= "@item.ApartmentId">Delete</a>}  
             </td>
         </tr>
 }
     </tbody>
 </table>
+</form>

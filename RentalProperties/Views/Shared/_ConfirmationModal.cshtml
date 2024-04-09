@@ -1,6 +1,6 @@
 ﻿<!-- _ConfirmationModal.cshtml -->
 
-<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" data-html="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @ViewBag.ConfirmationMessage
+                @Html.Raw(ViewBag.ConfirmationMessage)
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="cancelButton">Cancel</button>

@@ -7,7 +7,7 @@ namespace RentalProperties.DATA
     {
         public RentalPropertiesDBContext(DbContextOptions<RentalPropertiesDBContext> options) : base(options)
         {
-
+           
         }
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<Property> Properties { get; set; }

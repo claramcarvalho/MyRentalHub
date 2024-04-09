@@ -104,7 +104,7 @@
                             @(rental.RentalStatus)
                         </td>
                         <td>
-                            <a asp-controller="Rentals" asp-action="Details" asp-route-id="@rental">Details</a>
+                            <a asp-controller="Rentals" asp-action="Details" asp-route-id="@rental.RentalId">Details</a>
                         </td>
                     </tr>
                 }
@@ -118,5 +118,7 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.ApartmentId">Edit</a> |
-    <a asp-action="Index">View List of Apartments</a>
+    <a asp-action="Index">View List of Apartments</a> | 
+    <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model?.Property.PropertyId">Go to Property Details</a>
+
 </div>

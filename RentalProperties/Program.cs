@@ -8,11 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 var connection = builder.Configuration.GetConnectionString("RentalPropertiesDB");
-builder.Services.AddDbContext<RentalProperties.DATA.RentalPropertiesDBContext>(options => options.UseSqlServer(connection));
-
+builder.Services.AddDbContext<RentalProperties.DATA.RentalPropertiesDBContext>(options => 
+options.UseSqlServer(connection));
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-
 //Adding Cookie Authentication Handler
 builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
 {

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using RentalProperties.DATA;
 using RentalProperties.Models;
@@ -25,16 +27,10 @@ namespace RentalProperties.Controllers
         // GET: Rentals
         public async Task<IActionResult> Index()
         {
-            var listProperties = _context.Properties;
-            ViewData["Properties"] = new SelectList(listProperties, "PropertyId", "PropertyName");
+            ViewData["Properties"] = await GetListOfPropertiesDependingOnPolicy();
+            var listOfRentals = await GetRentalsDependingOnPolicy();
 
-            var rentalPropertiesDBContext = _context.Rentals
-                .Include(r => r.Apartment).ThenInclude(a => a.Property)
-                .Include(r => r.Tenant)
-                .Where(t => t.Tenant.UserType == UserType.Tenant)
-                .OrderBy(r => r.LastDayRental);
-
-            return View(await rentalPropertiesDBContext.ToListAsync());
+            return View(listOfRentals);
         }
 
         // GET: Rentals/Details/5
@@ -45,13 +41,14 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var rental = await _context.Rentals
-                .Include(r => r.Apartment).ThenInclude(a=> a.Property)
-                .Include(r => r.Tenant)
-                .FirstOrDefaultAsync(m => m.RentalId == id);
+            var rental = (Rental)await GetRentalDependingOnPolicy((int)id);
             if (rental == null)
             {
                 return NotFound();
+            }
+            if (! await CurrentUserIsAllowedToManageProperty(rental))
+            {
+                return RedirectToAction("AccessDenied", "Home");
             }
 
             return View(rental);
@@ -59,10 +56,10 @@ namespace RentalProperties.Controllers
 
         // GET: Rentals/Create
         [HttpGet("Rentals/Create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             //Creatting list of Apartments
-            ViewData["ApartmentsId"] = GetApartments();
+            ViewData["ApartmentsId"] = await GetApartments();
 
             //Creating list of Tenants
             ViewData["TenantId"] = GetTenants();
@@ -74,10 +71,10 @@ namespace RentalProperties.Controllers
 
         // GET: Rentals/Create/1
         [HttpGet("Rentals/Create/{apartmentId}")]
-        public IActionResult Create(int apartmentId)
+        public async Task<IActionResult> Create(int apartmentId)
         {
             //Creatting list of Apartments
-            ViewData["ApartmentsId"] = GetApartments(apartmentId);
+            ViewData["ApartmentsId"] = await GetApartments(apartmentId);
 
             //Creating list of Tenants
             ViewData["TenantId"] = GetTenants();
@@ -108,33 +105,36 @@ namespace RentalProperties.Controllers
                     errors.Add("Last Day of Rental can't be before First Day of Rental.");
                     dataOk = false;
                 }
-                if (rental.PriceRent == 0)
-                {
-                    errors.Add("The price of the rent can't be zero!");
-                    dataOk = false;
-                }
-                if (RentalInApartmentWithSameFirstDay(rental))
+                if (RentalInApartmentWithSameFirstDay(rental,false))
                 {
                     errors.Add("This apartment has already a rental that begins in the same day! Choose another day!");
                     dataOk = false;
                 }
-                if (RentalInApartmentWithOverlappingDates(rental))
+                if (RentalInApartmentWithOverlappingDates(rental,false))
                 {
                     errors.Add("This apartment has already a rental which dates overlap the chosen dates! Please verify before adding.");
                     dataOk = false;
+                }
+                if (rental.PriceRent == 0 && confirmationStatus == false)
+                {
+                    ViewData["ShowConfirmation"] = true;
+                    ViewBag.ConfirmationMessage = "You are defining the price as ZERO. Do you wish to continue?";
+                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
+                    ViewData["TenantId"] = GetTenants();
+                    return View(rental);
                 }
                 if (TenantWithSameFirstDayOfRental(rental) && confirmationStatus==false)
                 {
                     ViewData["ShowConfirmation"] = true;
                     ViewBag.ConfirmationMessage = "This tenant has already a rental that starts in the same day. Do you wish to continue?";
-                    ViewData["ApartmentsId"] = GetListOfApartments(rental);
+                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
                     ViewData["TenantId"] = GetTenants();
                     return View(rental);
                 }
                 if (!dataOk)
                 {
                     ViewData["ErrorMessage"] = errors;
-                    ViewData["ApartmentsId"] = GetListOfApartments(rental);
+                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
                     ViewData["TenantId"] = GetTenants();
                     return View(rental);
                 }
@@ -152,6 +152,7 @@ namespace RentalProperties.Controllers
         }
 
         // GET: Rentals/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -159,12 +160,16 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var rental = await _context.Rentals.FindAsync(id);
+            var rental = await GetRental((int)id);
             if (rental == null)
             {
                 return NotFound();
             }
-            ViewData["ApartmentId"] = GetApartments(rental.ApartmentId);
+            if (!await CurrentUserIsAllowedToManageProperty(rental))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
+            ViewData["ApartmentsId"] = await GetApartments(rental.ApartmentId);
             ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
@@ -174,7 +179,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RentalId,TenantId,ApartmentId,FirstDayRental,LastDayRental,PriceRent,RentalStatus")] Rental rental)
+        public async Task<IActionResult> Edit(int id, [Bind("RentalId,TenantId,ApartmentId,FirstDayRental,LastDayRental,PriceRent,RentalStatus")] Rental rental, bool confirmationStatus)
         {
             if (id != rental.RentalId)
             {
@@ -183,9 +188,74 @@ namespace RentalProperties.Controllers
 
             if (ModelState.IsValid)
             {
+                bool dataOk = true;
+                List<string> errors = new List<string>();
+                if (rental.LastDayRental < rental.FirstDayRental)
+                {
+                    errors.Add("Last Day of Rental can't be before First Day of Rental.");
+                    dataOk = false;
+                }
+                if (RentalInApartmentWithSameFirstDay(rental,true))
+                {
+                    errors.Add("This apartment has already a rental that begins in the same day! Choose another day!");
+                    dataOk = false;
+                }
+                if (RentalInApartmentWithOverlappingDates(rental,true))
+                {
+                    errors.Add("This apartment has already a rental which dates overlap the chosen dates! Please verify before adding.");
+                    dataOk = false;
+                }
+                if (!dataOk)
+                {
+                    ViewData["ErrorMessage"] = errors;
+                    ViewData["ApartmentsId"] = GetListOfApartments(rental);
+                    ViewData["TenantId"] = GetTenants();
+                    return View(rental);
+                }
+                bool needConfirmation = false;
+                string message = "";
+                if (TenantWithSameFirstDayOfRental(rental) && confirmationStatus == false)
+                {
+                    ViewData["ShowConfirmationDates"] = true;
+                    message = "This tenant has already a rental that starts in the same day.";
+                    needConfirmation = true;
+                }
+                if (rental.PriceRent == 0 && confirmationStatus == false)
+                {
+                    ViewData["ShowConfirmationPrice"] = true;
+                    if (message != "")
+                    {
+                        message = message + "<br><br>You are defining the price as ZERO.";
+                    }
+                    else
+                    {
+                        message = "You are defining the price as ZERO.";
+                    }
+                    needConfirmation = true;
+                }
+                string messageFinal = message;
+                messageFinal = messageFinal + "<br><br>Do you wish to continue?";
+                ViewBag.ConfirmationMessage = messageFinal;
+                if (needConfirmation)
+                {
+                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
+                    ViewData["TenantId"] = GetTenants();
+                    return View(rental);
+                }
                 try
                 {
-                    _context.Update(rental);
+                    Rental updateThisRental = _context.Rentals.FirstOrDefault(r =>
+                    r.RentalId == id);
+
+                    if (updateThisRental != null)
+                    {
+                        updateThisRental.TenantId = rental.TenantId;
+                        updateThisRental.ApartmentId = rental.ApartmentId;
+                        updateThisRental.FirstDayRental = rental.FirstDayRental;
+                        updateThisRental.LastDayRental = rental.LastDayRental;
+                        updateThisRental.PriceRent = rental.PriceRent;
+                    }      
+                    _context.Update(updateThisRental);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -201,7 +271,7 @@ namespace RentalProperties.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApartmentId"] = GetApartments(id);
+            ViewData["ApartmentId"] = await GetApartments(id);
             ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
@@ -317,45 +387,52 @@ namespace RentalProperties.Controllers
             return View("Index", filteredStatus);
         }
 
-        private SelectList GetApartments()
+        private async Task<SelectList> GetApartments()
         {
             //Creatting list of Apartments
             List<SelectListItem> list = new List<SelectListItem>();
             foreach (var item in _context.Apartments
                 .Include(a => a.Property))
             {
-                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
-                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
-                list.Add(selectListItem);
+                if (await UserHasPolicy("MustBeOwnerOrAdministrator") || CurrentUserIsAllowedToManageProperty(item))
+                {
+                    string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
+                    SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
+                    list.Add(selectListItem);
+                }
+                
             }
             SelectList listOfApartments = new SelectList(list, "Value", "Text");
 
             return listOfApartments;
         }
 
-        private SelectList GetApartments(int apartmentId)
+        private async Task<SelectList> GetApartments(int apartmentId)
         {
             List<SelectListItem> list = new List<SelectListItem>();
             foreach (var item in _context.Apartments
                 .Include(a => a.Property)
                 .Where(a => a.ApartmentId == apartmentId))
             {
-                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
-                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
-                list.Add(selectListItem);
+                if (await UserHasPolicy("MustBeOwnerOrAdministrator") || CurrentUserIsAllowedToManageProperty(item))
+                {
+                    string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
+                    SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
+                    list.Add(selectListItem);
+                }
             }
             SelectList listOfApartments = new SelectList(list, "Value", "Text");
 
             return listOfApartments;
         }
 
-        private SelectList GetListOfApartments(Rental rental)
+        private async Task<SelectList> GetListOfApartments(Rental rental)
         {
             List<SelectListItem> list = new List<SelectListItem>();
             SelectList listOfApartments = new SelectList(list, "Value", "Text");
             if (EndsWithANumber())
-                listOfApartments = GetApartments(rental.ApartmentId);
-            else listOfApartments = GetApartments();
+                listOfApartments = await GetApartments(rental.ApartmentId);
+            else listOfApartments = await GetApartments();
 
             return listOfApartments;
         }
@@ -372,8 +449,12 @@ namespace RentalProperties.Controllers
             return endsWithNumber;
         }
 
-        private bool RentalInApartmentWithSameFirstDay(Rental newRental)
+        private bool RentalInApartmentWithSameFirstDay(Rental newRental, bool isEdition)
         {
+            if (isEdition)
+            {
+                return false;
+            }
             if (_context.Rentals.Where(r => 
                 r.ApartmentId == newRental.ApartmentId && 
                 r.FirstDayRental == newRental.FirstDayRental)
@@ -384,8 +465,17 @@ namespace RentalProperties.Controllers
             return false;
         }
 
-        private bool RentalInApartmentWithOverlappingDates(Rental newRental)
+        private bool RentalInApartmentWithOverlappingDates(Rental newRental, bool isEdition)
         {
+            if (isEdition)
+            {
+                var oldRental = _context.Rentals.Where(r => r.RentalId == newRental.RentalId).First();
+                if (newRental.FirstDayRental >= oldRental.FirstDayRental &&
+                    newRental.LastDayRental <= oldRental.LastDayRental)
+                {
+                    return false;
+                } 
+            }
             var overlaps = _context.Rentals
             .FirstOrDefault(r =>
                 ((newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
@@ -409,6 +499,118 @@ namespace RentalProperties.Controllers
                 return true;
             }
             return false;
+        }
+
+        private async Task<SelectList> GetListOfPropertiesDependingOnPolicy()
+        {
+            var propertiesFromDatabase = _context.Properties.AsQueryable();
+
+            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            {
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+                propertiesFromDatabase = propertiesFromDatabase.Where(u => u.ManagerId == userId);
+            }
+
+            SelectList listOfProperties = new SelectList(
+                propertiesFromDatabase,
+                "PropertyId",
+                "PropertyName");
+
+            return listOfProperties;
+        }
+
+        private async Task<bool> UserHasPolicy(string policyName)
+        {
+            var currentUser = HttpContext.User;
+            var authorizationService = HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();
+            var authorizationResult = await authorizationService.AuthorizeAsync(currentUser, null, policyName);
+            return authorizationResult.Succeeded;
+        }
+
+        private async Task<IQueryable<Rental>> GetRentalsDependingOnPolicy()
+        {
+            var rentalsFromDatabase = _context.Rentals
+                .Include(r => r.Apartment).ThenInclude(a => a.Property)
+                .Include(r => r.Tenant)
+                .Where(t => t.Tenant.UserType == UserType.Tenant)
+                .OrderBy(r => r.FirstDayRental).AsQueryable().AsNoTracking();
+
+            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            {
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+                rentalsFromDatabase = rentalsFromDatabase.Where(u => u.Apartment.Property.ManagerId == userId);
+            }
+
+            return rentalsFromDatabase;
+        }
+
+        private async Task<Rental> GetRentalDependingOnPolicy(int id)
+        {
+            var rentalFromDatabase = _context.Rentals
+                .Include(r => r.Apartment).ThenInclude(a => a.Property)
+                .Include(r => r.Tenant)
+                .Where(r => r.RentalId == id).First();
+            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            {
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+                if (rentalFromDatabase.Apartment.Property.ManagerId != userId)
+                {
+                    rentalFromDatabase = null;
+                }               
+            }
+
+            return rentalFromDatabase;
+        }
+
+        private async Task<Rental> GetRental(int id)
+        {
+            var rentalFromDatabase = _context.Rentals
+                .Include(r => r.Apartment).ThenInclude(a => a.Property)
+                .Include(r => r.Tenant)
+                .Where(r => r.RentalId == id).First();
+            
+            return rentalFromDatabase;
+        }
+
+        private async Task<bool> CurrentUserIsAllowedToManageProperty(Rental rental)
+        {
+            var currentUser = HttpContext.User;
+            if (currentUser.HasClaim(c =>
+                c.Type == "Type" &&
+                (
+                    c.Value == "Manager"
+                )))
+            {
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (rental.Apartment.Property.ManagerId != userId)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private bool CurrentUserIsAllowedToManageProperty(Apartment apartment)
+        {
+            var currentUser = HttpContext.User;
+            if (currentUser.HasClaim(c =>
+                c.Type == "Type" &&
+                (
+                    c.Value == "Manager"
+                )))
+            {
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (apartment.Property.ManagerId != userId)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

@@ -50,26 +50,27 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var @property = await _context.Properties
-                .Include(m => m.Manager).Include(m=>m.Apartments)
+            var property = await _context.Properties
+                .Include(m => m.Manager).Include(m => m.Apartments)
                 .FirstOrDefaultAsync(m => m.PropertyId == id);
-            if (@property == null)
+            if (property == null)
             {
                 return NotFound();
             }
 
-            return View(@property);
+
+            if (!CurrentUserIsAllowedToManageProperty(property))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
+
+            return View(property);
         }
 
         // GET: Properties/Create
         public async Task<IActionResult> Create()
         {
-            var managersFromDatabase = await ListOfManagersDependingOnPolicy();
-
-            ViewData["ManagerId"] = new SelectList(
-                managersFromDatabase, 
-                "UserId", 
-                "FullName");
+            ViewData["ManagerId"] = await ListOfManagersDependingOnPolicy();
             return View();
         }
 
@@ -82,10 +83,7 @@ namespace RentalProperties.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool propertyNameAlreadyExists = _context.Properties.Where(p =>
-                    p.PropertyName == property.PropertyName).Any();
-
-                if (!propertyNameAlreadyExists)
+                if(!PropertyNameAlreadyExists(property))
                 {
                     property.PostalCode = property.PostalCode.ToUpper();
                     _context.Add(property);
@@ -94,11 +92,11 @@ namespace RentalProperties.Controllers
                 }
 
                 ViewData["ErrorMessage"] = "There is already a Property with that same name! Please choose a different name.";
-                ViewData["ManagerId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", property.ManagerId);
+                ViewData["ManagerId"] = await ListOfManagersDependingOnPolicy();
                 return View(property);
 
             }
-            ViewData["ManagerId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", property.ManagerId);
+            ViewData["ManagerId"] = await ListOfManagersDependingOnPolicy();
             return View(property);
         }
 
@@ -110,21 +108,20 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var @property = await _context.Properties.FindAsync(id);
-            if (@property == null)
+            var property = await _context.Properties.FindAsync(id);
+            if (property == null)
             {
                 return NotFound();
             }
 
-            var managersFromDatabase = await ListOfManagersDependingOnPolicy();
+            if (!CurrentUserIsAllowedToManageProperty(property))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
 
-            ViewData["ManagerId"] = new SelectList(
-                managersFromDatabase,
-                "UserId",
-                "FullName",
-                @property.ManagerId);
+            ViewData["ManagerId"] = await ListOfManagersDependingOnPolicy();
 
-            return View(@property);
+            return View(property);
         }
 
         // POST: Properties/Edit/5
@@ -132,35 +129,38 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PropertyId,PropertyName,AddressNumber,AddressStreet,PostalCode,City,Neighbourhood,ManagerId")] Property @property)
+        public async Task<IActionResult> Edit(int id, [Bind("PropertyId,PropertyName,AddressNumber,AddressStreet,PostalCode,City,Neighbourhood,ManagerId")] Property property)
         {
-            if (id != @property.PropertyId)
+            if (id != property.PropertyId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                if (!PropertyNameAlreadyExists(property))
                 {
-                    _context.Update(@property);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PropertyExists(@property.PropertyId))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(property);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!PropertyExists(property.PropertyId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["ManagerId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", @property.ManagerId);
-            return View(@property);
+            ViewData["ManagerId"] = ListOfManagersDependingOnPolicy();
+            return View(property);
         }
 
         // GET: Properties/Delete/5
@@ -171,15 +171,19 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var @property = await _context.Properties
+            var property = await _context.Properties
                 .Include(m => m.Manager)
                 .FirstOrDefaultAsync(m => m.PropertyId == id);
-            if (@property == null)
+            if (property == null)
             {
                 return NotFound();
             }
+            if (!CurrentUserIsAllowedToManageProperty(property))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
 
-            return View(@property);
+            return View(property);
         }
 
         // POST: Properties/Delete/5
@@ -187,10 +191,10 @@ namespace RentalProperties.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var @property = await _context.Properties.FindAsync(id);
-            if (@property != null)
+            var property = await _context.Properties.FindAsync(id);
+            if (property != null)
             {
-                _context.Properties.Remove(@property);
+                _context.Properties.Remove(property);
             }
 
             await _context.SaveChangesAsync();
@@ -202,7 +206,7 @@ namespace RentalProperties.Controllers
             return _context.Properties.Any(e => e.PropertyId == id);
         }
 
-        public async Task<bool> UserHasPolicy(string policyName)
+        private async Task<bool> UserHasPolicy(string policyName)
         {
             var currentUser = HttpContext.User;
             var authorizationService = HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();
@@ -210,7 +214,7 @@ namespace RentalProperties.Controllers
             return authorizationResult.Succeeded;
         }
 
-        public async Task<IEnumerable<UserAccount>> ListOfManagersDependingOnPolicy()
+        public async Task<SelectList> ListOfManagersDependingOnPolicy()
         {
             var managersFromDatabase = _context.UserAccounts.Where(
                 m => m.UserType == UserType.Manager
@@ -223,7 +227,37 @@ namespace RentalProperties.Controllers
                 managersFromDatabase = managersFromDatabase.Where(u => u.UserId == userId);
             }
 
-            return managersFromDatabase.ToList();
+            SelectList listOfManagers = new SelectList(
+                managersFromDatabase,
+                "UserId",
+                "FullName");
+
+            return listOfManagers;
+        }
+
+        private bool PropertyNameAlreadyExists(Property property)
+        {
+            return _context.Properties.Where(p =>
+                    p.PropertyName == property.PropertyName).Any();
+        }
+
+        private bool CurrentUserIsAllowedToManageProperty(Property property)
+        {
+            var currentUser = HttpContext.User;
+            if (currentUser.HasClaim(c =>
+                c.Type == "Type" &&
+                (
+                    c.Value == "Manager"
+                )))
+            {
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (property.ManagerId != userId)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿@model RentalProperties.Models.Rental
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Details of Rental";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>Details of Rental</h1>
 
 <div>
     <h4>Rental</h4>
@@ -57,5 +57,6 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.RentalId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Go to List of Rentals</a> | 
+    <a asp-controller="Apartments" asp-action="Details" asp-route-id="@Model?.Apartment.ApartmentId">Go Apartment Details</a>
 </div>

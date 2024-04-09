@@ -21,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ApartmentId" class="control-label"></label>
-                <select asp-for="ApartmentId" class="form-control" asp-items="ViewBag.ApartmentId"></select>
+                <select asp-for="ApartmentId" class="form-control" asp-items="ViewBag.ApartmentsId"></select>
                 <span asp-validation-for="ApartmentId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -44,6 +44,7 @@
                 <select asp-for="RentalStatus" class="form-control" asp-items="Html.GetEnumSelectList<StatusOfRental>()"></select>
                 <span asp-validation-for="RentalStatus" class="text-danger"></span>
             </div>
+            <input type="hidden" id="confirmationStatus" name="confirmationStatus" value="false" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -58,3 +59,21 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
+<!-- Include the partial view for the confirmation modal -->
+@Html.Partial("_ConfirmationModal")
+
+<!-- JavaScript to show the modal -->
+<script>
+    $(document).ready(function () {
+        var showConfirmationModalDate = '@ViewBag.ShowConfirmationDates';
+        var showConfirmationModalPrice = '@ViewBag.ShowConfirmationPrice';
+
+        if (showConfirmationModalDate.toLowerCase() === 'true' ||
+            showConfirmationModalPrice.toLowerCase() === 'true') {
+            $('#confirmationModal').modal('show');
+        }
+
+    });
+</script>
