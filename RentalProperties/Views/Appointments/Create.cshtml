@@ -19,13 +19,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="ApartmentId" class="control-label"></label>
-                <select asp-for="ApartmentId" class ="form-control" asp-items="ViewBag.ApartmentId"></select>
+                <select asp-for="ApartmentId" class="form-control" asp-items="ViewBag.ApartmentId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="VisitDate" class="control-label"></label>
-                <input asp-for="VisitDate" class="form-control" />
+                <input type="date" asp-for="VisitDate" class="form-control" />
                 <span asp-validation-for="VisitDate" class="text-danger"></span>
             </div>
+            <input type="hidden" id="confirmationStatus" name="confirmationStatus" value="false" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -40,3 +41,17 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
+<!-- Include the partial view for the confirmation modal -->
+@Html.Partial("_ConfirmationModal")
+
+<!-- JavaScript to show the modal -->
+<script>
+    $(document).ready(function () {
+        var showConfirmationModal = '@ViewBag.ShowConfirmation';
+        if (showConfirmationModal.toLowerCase() === 'true') {
+            $('#confirmationModal').modal('show');
+        }
+    });
+</script>

@@ -17,6 +17,9 @@
                 @Html.DisplayNameFor(model => model.Tenant)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Apartment.Property)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Apartment)
             </th>
             <th>
@@ -29,10 +32,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Tenant.UserId)
+                @Html.DisplayFor(modelItem => item.Tenant.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Apartment.ApartmentId)
+                @Html.DisplayFor(modelItem => item.Apartment.Property.PropertyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.VisitDate)

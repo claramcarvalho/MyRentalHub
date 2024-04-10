@@ -28,6 +28,7 @@ namespace RentalProperties.Controllers
             return View(await rentalPropertiesDBContext.ToListAsync());
         }
 
+        /*
         // GET: MessageFromTenants/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,11 +47,11 @@ namespace RentalProperties.Controllers
             }
 
             return View(messageFromTenant);
-        }
+        } */
 
-        //[Authorize(Policy = "CantBeTenant")]
         // GET: MessageFromTenants/Create
         [HttpGet("MessageFromTenants/Create")]
+        [Authorize(Policy = "MustBeTenant")]
         public IActionResult Create(int apartmentId)
         {
             ViewData["ApartmentId"] = new SelectList(_context.Apartments.Where(a => a.ApartmentId == apartmentId), "ApartmentId", "ApartmentNumber");
@@ -65,6 +66,7 @@ namespace RentalProperties.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Policy = "MustBeTenant")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MessageId,TenantId,ApartmentId,MessageSent,AnswerFromManager")] MessageFromTenant messageFromTenant)
         {
@@ -74,9 +76,10 @@ namespace RentalProperties.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId", messageFromTenant.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", messageFromTenant.TenantId);
-            return View(messageFromTenant);
+            ViewData["ApartmentId"] = new SelectList(_context.Apartments.Where(a => a.ApartmentId == messageFromTenant.ApartmentId), "ApartmentId", "ApartmentNumber");
+            var currentUser = HttpContext.User;
+            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+            ViewData["TenantId"] = new SelectList(_context.UserAccounts.Where(u => u.UserId == userId), "UserId", "FullName"); return View(messageFromTenant);
         }
 
         // GET: MessageFromTenants/Edit/5
@@ -143,11 +146,12 @@ namespace RentalProperties.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId", messageFromTenant.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", messageFromTenant.TenantId);
+            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentNumber", messageFromTenant.ApartmentId);
+            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "FullName", messageFromTenant.TenantId);
             return View(messageFromTenant);
         }
 
+        [Authorize(Policy = "MustBeTenant")]
         // GET: MessageFromTenants/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -170,6 +174,7 @@ namespace RentalProperties.Controllers
 
         // POST: MessageFromTenants/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Policy = "MustBeTenant")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
