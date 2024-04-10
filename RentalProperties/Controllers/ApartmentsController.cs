@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
 using RentalProperties.DATA;
 using RentalProperties.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static NuGet.Client.ManagedCodeConventions;
 
 namespace RentalProperties.Controllers
 {
@@ -41,7 +43,8 @@ namespace RentalProperties.Controllers
             }
             else
             {
-                /////////////////////////PAREI AQUI --> SEARCHING APARTMENTS
+                var listProperties = _context.Properties;
+                ViewData["Properties"] = new SelectList(listProperties, "PropertyId", "PropertyName");
                 var listOfApartments = _context.Apartments.Include(a => a.Property);
                 return View(await listOfApartments.ToListAsync());
             }
@@ -375,5 +378,184 @@ namespace RentalProperties.Controllers
 
             return listOfProperties;
         }
+
+        public async Task<IActionResult> Search(
+                string queryMDate,
+                string queryProperty,
+                string queryNbBed,
+                string queryNbBath,
+                string queryNbParking,
+                string queryMinPrice,
+                string queryMaxPrice,
+                string queryAnimals
+                )
+        {
+            string filtersApplied = "Filters Applied:";
+            var apartmentsToFilter = _context.Apartments
+                .Include(a=>a.Property)
+                .Include(a=>a.Rentals)
+                .ToList();
+            if (await UserHasPolicy("MustBeManager"))
+            {
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+                apartmentsToFilter = apartmentsToFilter.Where(a => a.Property.ManagerId == userId).ToList();
+            }
+            //filtering moving date
+            if (!queryMDate.IsNullOrEmpty())
+            {
+                apartmentsToFilter = FilterAvailableApartmentsInMovingDate(queryMDate, apartmentsToFilter);
+                filtersApplied = filtersApplied + " (Moving Date: " + DateOnly.FromDateTime(DateTime.Parse(queryMDate)) + ")";
+            }
+            if (queryProperty.ToString() != "All")
+            {
+                apartmentsToFilter = apartmentsToFilter.Where(u => u.Property.PropertyId == int.Parse(queryProperty)).ToList();
+                string propertyName = _context.Properties.FirstOrDefault(p => p.PropertyId == int.Parse(queryProperty)).PropertyName;
+                filtersApplied = filtersApplied + " (Property: " + propertyName +")";
+            }
+
+            if (queryNbBed.ToString() != "All")
+            {
+                apartmentsToFilter = FilterNbOfBeds(queryNbBed,apartmentsToFilter);
+                filtersApplied = filtersApplied + " (Number of Bedrooms: "+ queryNbBed + ")";
+            }
+            if (queryNbBath.ToString() != "All")
+            {
+                apartmentsToFilter = FilterNbOfBaths(queryNbBath, apartmentsToFilter);
+                filtersApplied = filtersApplied + " (Number of Bathrooms: " + queryNbBath + ")";
+            }
+            if (queryNbParking.ToString() != "All")
+            {
+                apartmentsToFilter = FilterNbOfParking(queryNbParking, apartmentsToFilter);
+                filtersApplied = filtersApplied + " (Number of Parking Spots: " + queryNbParking + ")";
+            }
+            if (!queryMinPrice.IsNullOrEmpty())
+            {
+                apartmentsToFilter = apartmentsToFilter.Where(u => u.PriceAnnounced >= decimal.Parse(queryMinPrice)).ToList();
+                filtersApplied = filtersApplied + " (Min Price: " + decimal.Parse(queryMinPrice) + ")";
+            }
+            if (!queryMaxPrice.IsNullOrEmpty())
+            {
+                apartmentsToFilter = apartmentsToFilter.Where(u => u.PriceAnnounced <= decimal.Parse(queryMaxPrice)).ToList();
+                filtersApplied = filtersApplied + " (Max Price: " + decimal.Parse(queryMaxPrice) + ")";
+            }
+            if (queryAnimals == "true")
+            {
+                apartmentsToFilter = apartmentsToFilter.Where(u => u.AnimalsAccepted).ToList();
+                filtersApplied = filtersApplied + " (Animals Accepted: " + queryAnimals + ")";
+            }
+            else if (queryAnimals == "false")
+            {
+                apartmentsToFilter = apartmentsToFilter.Where(u => !u.AnimalsAccepted).ToList();
+                filtersApplied = filtersApplied + " (Animals Accepted: " + queryAnimals + ")";
+            }
+
+            var listProperties = _context.Properties;
+            ViewData["Filters"] = filtersApplied.ToString();
+            ViewData["Properties"] = new SelectList(listProperties, "PropertyId", "PropertyName");
+            return View("Index", apartmentsToFilter);
+        }
+
+        public List<Apartment> FilterNbOfBeds(string query, List<Apartment> apartments)
+        {
+            switch(query)
+            {
+                case "0":
+                    apartments = apartments.Where(a => a.NbOfBeds == 0).ToList();
+                    break;
+                case "0+":
+                    apartments = apartments.Where(a => a.NbOfBeds >= 0).ToList();
+                    break;
+                case "1":
+                    apartments = apartments.Where(a => a.NbOfBeds == 1).ToList();
+                    break;
+                case "1+":
+                    apartments = apartments.Where(a => a.NbOfBeds >= 1).ToList();
+                    break;
+                case "2":
+                    apartments = apartments.Where(a => a.NbOfBeds == 2).ToList();
+                    break;
+                case "2+":
+                    apartments = apartments.Where(a => a.NbOfBeds >= 2).ToList();
+                    break;
+                case "3":
+                    apartments = apartments.Where(a => a.NbOfBeds == 3).ToList();
+                    break;
+                case "3+":
+                    apartments = apartments.Where(a => a.NbOfBeds >= 3).ToList();
+                    break;
+
+            }
+
+            return apartments;
+        }
+
+        public List<Apartment> FilterNbOfBaths(string query, List<Apartment> apartments)
+        {
+            switch (query)
+            {
+                case "1":
+                    apartments = apartments.Where(a => a.NbOfBaths == 1).ToList();
+                    break;
+                case "1+":
+                    apartments = apartments.Where(a => a.NbOfBaths >= 1).ToList();
+                    break;
+                case "2":
+                    apartments = apartments.Where(a => a.NbOfBaths == 2).ToList();
+                    break;
+                case "2+":
+                    apartments = apartments.Where(a => a.NbOfBaths >= 2).ToList();
+                    break;
+            }
+
+            return apartments;
+        }
+
+        public List<Apartment> FilterNbOfParking(string query, List<Apartment> apartments)
+        {
+            switch (query)
+            {
+                case "1":
+                    apartments = apartments.Where(a => a.NbOfParkingSpots == 1).ToList();
+                    break;
+                case "1+":
+                    apartments = apartments.Where(a => a.NbOfParkingSpots >= 1).ToList();
+                    break;
+                case "2":
+                    apartments = apartments.Where(a => a.NbOfParkingSpots == 2).ToList();
+                    break;
+                case "2+":
+                    apartments = apartments.Where(a => a.NbOfParkingSpots >= 2).ToList();
+                    break;
+            }
+
+            return apartments;
+        }
+
+        public List<Apartment> FilterAvailableApartmentsInMovingDate(string movingD, List<Apartment> apartments)
+        {
+            List<Apartment> newListOfApartments = new List<Apartment>();
+            DateOnly movingDate = DateOnly.FromDateTime(DateTime.Parse(movingD));
+            foreach (var apartment in apartments)
+            {
+                var rentalsInApt = _context.Rentals.Where(r => r.ApartmentId == apartment.ApartmentId);
+                bool rentalAvailable = true;
+                foreach (var rental in rentalsInApt)
+                {
+                    if (movingDate > rental.FirstDayRental && movingDate < rental.LastDayRental && rental.RentalStatus != StatusOfRental.Terminated)
+                    {
+                        rentalAvailable = false; 
+                        break;
+                    }
+                }
+                if (rentalAvailable)
+                {
+                    newListOfApartments.Add(apartment);
+                }        
+            }
+
+            return newListOfApartments;
+        }
+
     }
 }

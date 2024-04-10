@@ -1,41 +1,70 @@
 ﻿@model RentalProperties.Models.MessageFromTenant
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool messageReplied = false;
+    if (ViewData["ErrorMessage"] != null)
+        messageReplied = true;
 }
 
 <h1>Edit</h1>
 
 <h4>MessageFromTenant</h4>
 <hr />
+@if (messageReplied)
+{
+    <div class="text-danger">@ViewData["ErrorMessage"]</div>
+}
 <div class="row">
-    <div class="col-md-4">
+    <div class="w-100">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MessageId" />
-            <div class="form-group">
-                <label asp-for="TenantId" class="control-label"></label>
-                <select asp-for="TenantId" class="form-control" asp-items="ViewBag.TenantId"></select>
-                <span asp-validation-for="TenantId" class="text-danger"></span>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="TenantId" class="control-label"></label>
+                    <select asp-for="TenantId" class="form-control" asp-items="ViewBag.TenantId"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ApartmentId" class="control-label"></label>
+                    <select asp-for="ApartmentId" class="form-control" asp-items="ViewBag.ApartmentId"></select>
+                </div>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label asp-for="MessageSent" class="control-label"></label>
+                   @if ((await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded && !messageReplied)
+                    {
+                        <textarea asp-for="MessageSent" class="form-control w-100" rows="10"></textarea>
+                    } else
+                    {
+                        <textarea asp-for="MessageSent" class="form-control w-100" rows="10" readonly></textarea>
+                    }
+                    <span asp-validation-for="MessageSent" class="text-danger"></span>
+                </div>
+                @if ((await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded)
+                {
+                    <div class="form-group">
+                        <label asp-for="AnswerFromManager" class="control-label"></label>
+                        @if (messageReplied)
+                        {
+                            <textarea asp-for="AnswerFromManager" class="form-control w-100" rows="10" readonly></textarea>
+                        } else
+                        {
+                            <textarea asp-for="AnswerFromManager" class="form-control w-100" rows="10"></textarea>
+                        }
+                        <span asp-validation-for="AnswerFromManager" class="text-danger"></span>
+                    </div>
+                }
             </div>
             <div class="form-group">
-                <label asp-for="ApartmentId" class="control-label"></label>
-                <select asp-for="ApartmentId" class="form-control" asp-items="ViewBag.ApartmentId"></select>
-                <span asp-validation-for="ApartmentId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MessageSent" class="control-label"></label>
-                <input asp-for="MessageSent" class="form-control" />
-                <span asp-validation-for="MessageSent" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AnswerFromManager" class="control-label"></label>
-                <input asp-for="AnswerFromManager" class="form-control" />
-                <span asp-validation-for="AnswerFromManager" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                @if (!messageReplied)
+                {
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                }
             </div>
         </form>
     </div>

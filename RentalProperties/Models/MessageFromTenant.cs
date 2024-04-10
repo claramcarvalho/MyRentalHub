@@ -24,7 +24,7 @@ namespace RentalProperties.Models
         public string MessageSent { get; set; } = null!;
 
         [DisplayName("Answer from Manager")]
-        public string AnswerFromManager { get; set; } = null!;
+        public string? AnswerFromManager { get; set; } = null!;
 
     }
 }

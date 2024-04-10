@@ -1,54 +1,72 @@
 ﻿@model IEnumerable<RentalProperties.Models.MessageFromTenant>
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Messages";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tenant)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Apartment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MessageSent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AnswerFromManager)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tenant.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apartment.ApartmentId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MessageSent)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnswerFromManager)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MessageId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MessageId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MessageId">Delete</a>
-            </td>
-        </tr>
+<h1>Messages</h1>
+@foreach (var item in Model)
+{
+    <dl class="row">
+        @if ((await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded)
+        {
+            <dt class="col-sm-2">
+                From:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.Tenant.FullName)
+            </dd>
+        }   
+        <dt class="col-sm-2">
+            Subject:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
+        </dd>
+        <dt class="col-sm-2">
+            Building:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(modelItem => item.Apartment.Property.PropertyName)
+        </dd>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MessageSent)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AnswerFromManager)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            <td class="w-50">
+                <textarea rows="5" class="w-100 p-2" disabled>@Html.DisplayFor(modelItem => item.MessageSent)</textarea>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.MessageId">Edit</a>
+                        <text>|</text>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded)
+                    {
+                    <a asp-action="Delete" asp-route-id="@item.MessageId">Delete</a>
+                    }
+                </td>
+            <td class="w-50">
+                <textarea rows="5" class="w-100 p-2" disabled>@Html.DisplayFor(modelItem => item.AnswerFromManager)</textarea>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded)
+                    {
+                    <a asp-action="Edit" asp-route-id="@item.MessageId">Edit</a>
+                    }
+                </td>
+            <td></td>
+            </tbody>
+        </table>
+        <hr />
+    </dl>
 }
-    </tbody>
-</table>

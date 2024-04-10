@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +24,7 @@ namespace RentalProperties.Controllers
         // GET: MessageFromTenants
         public async Task<IActionResult> Index()
         {
-            var rentalPropertiesDBContext = _context.MessagesFromTenants.Include(m => m.Apartment).Include(m => m.Tenant);
+            var rentalPropertiesDBContext = _context.MessagesFromTenants.Include(m => m.Apartment).ThenInclude(a=>a.Property).Include(m => m.Tenant);
             return View(await rentalPropertiesDBContext.ToListAsync());
         }
 
@@ -46,11 +48,16 @@ namespace RentalProperties.Controllers
             return View(messageFromTenant);
         }
 
+        //[Authorize(Policy = "CantBeTenant")]
         // GET: MessageFromTenants/Create
-        public IActionResult Create()
+        [HttpGet("MessageFromTenants/Create")]
+        public IActionResult Create(int apartmentId)
         {
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId");
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserId");
+            ViewData["ApartmentId"] = new SelectList(_context.Apartments.Where(a => a.ApartmentId == apartmentId), "ApartmentId", "ApartmentNumber");
+
+            var currentUser = HttpContext.User;
+            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+            ViewData["TenantId"] = new SelectList(_context.UserAccounts.Where(u => u.UserId == userId), "UserId", "FullName");
             return View();
         }
 
@@ -80,13 +87,27 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var messageFromTenant = await _context.MessagesFromTenants.FindAsync(id);
+            var messageFromTenant = _context.MessagesFromTenants
+                .Include(m=>m.Tenant)
+                .Include(m=>m.Apartment).ThenInclude(a=>a.Property)
+                .FirstOrDefault(m=>m.MessageId==id);
             if (messageFromTenant == null)
             {
                 return NotFound();
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId", messageFromTenant.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", messageFromTenant.TenantId);
+            if (!MessageFromTenantOrForManager(messageFromTenant))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
+            if (messageFromTenant.AnswerFromManager != null)
+            {
+                ViewData["ErrorMessage"] = "You can only edit messages that were not replied.";
+                ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentNumber", messageFromTenant.ApartmentId);
+                ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "FullName", messageFromTenant.TenantId);
+                return View(messageFromTenant);
+            }
+            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentNumber", messageFromTenant.ApartmentId);
+            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "FullName", messageFromTenant.TenantId);
             return View(messageFromTenant);
         }
 
@@ -165,6 +186,18 @@ namespace RentalProperties.Controllers
         private bool MessageFromTenantExists(int id)
         {
             return _context.MessagesFromTenants.Any(e => e.MessageId == id);
+        }
+
+        private bool MessageFromTenantOrForManager(MessageFromTenant message)
+        {
+            var currentUser = HttpContext.User;
+            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            if (message.TenantId == userId || message.Apartment.Property.ManagerId == userId)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
