@@ -30,12 +30,12 @@ namespace RentalProperties.Controllers
         {
             var currentUser = HttpContext.User;
 
-            if (await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var listOfApartments = _context.Apartments.Include(a => a.Property);
                 return View(await listOfApartments.ToListAsync());
             }
-            else if (await UserHasPolicy("MustBeManager"))
+            else if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeManager"))
             {
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
                 var listOfApartments = _context.Apartments.Include(a => a.Property).Where(m => m.Property.ManagerId == userId);
@@ -333,19 +333,11 @@ namespace RentalProperties.Controllers
             return true;
         }
 
-        private async Task<bool> UserHasPolicy(string policyName)
-        {
-            var currentUser = HttpContext.User;
-            var authorizationService = HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();
-            var authorizationResult = await authorizationService.AuthorizeAsync(currentUser, null, policyName);
-            return authorizationResult.Succeeded;
-        }
-
         private async Task<SelectList> ListOfPropertiesDependingOnUser()
         {
             var propertiesFromDatabase = _context.Properties.AsQueryable();
 
-            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (!await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -364,7 +356,7 @@ namespace RentalProperties.Controllers
         {
             var propertiesFromDatabase = _context.Properties.Where(p=> p.PropertyId == propertyId);
 
-            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (!await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -395,7 +387,7 @@ namespace RentalProperties.Controllers
                 .Include(a=>a.Property)
                 .Include(a=>a.Rentals)
                 .ToList();
-            if (await UserHasPolicy("MustBeManager"))
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeManager"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);

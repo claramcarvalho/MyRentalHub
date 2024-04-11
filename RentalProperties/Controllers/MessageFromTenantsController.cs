@@ -98,7 +98,7 @@ namespace RentalProperties.Controllers
             {
                 return NotFound();
             }
-            if (!MessageFromTenantOrForManager(messageFromTenant))
+            if (! await MessageFromTenantOrForManager(messageFromTenant))
             {
                 return RedirectToAction("AccessDenied", "Home");
             }
@@ -193,12 +193,14 @@ namespace RentalProperties.Controllers
             return _context.MessagesFromTenants.Any(e => e.MessageId == id);
         }
 
-        private bool MessageFromTenantOrForManager(MessageFromTenant message)
+        private async Task<bool> MessageFromTenantOrForManager(MessageFromTenant message)
         {
             var currentUser = HttpContext.User;
             int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            if (message.TenantId == userId || message.Apartment.Property.ManagerId == userId)
+            if (message.TenantId == userId || 
+                message.Apartment.Property.ManagerId == userId ||
+                await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 return true;
             }

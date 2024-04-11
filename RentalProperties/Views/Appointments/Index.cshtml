@@ -5,11 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>List of Appointments</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Schedule a New Appointment</a>
 </p>
+<h4>Next Appointments</h4>
 <table class="table">
     <thead>
         <tr>
@@ -30,6 +31,8 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
+    if (item.VisitDate >= DateOnly.FromDateTime(DateTime.Now))
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Tenant.FullName)
@@ -49,6 +52,53 @@
                 <a asp-action="Delete" asp-route-id="@item.AppointmentId">Delete</a>
             </td>
         </tr>
+    }      
 }
+    </tbody>
+</table>
+
+<h4>Past Appointments</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tenant)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apartment.Property)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apartment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VisitDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.VisitDate < DateOnly.FromDateTime(DateTime.Now))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Tenant.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Apartment.Property.PropertyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VisitDate)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.AppointmentId">Details</a>
+                    </td>
+                </tr>
+            }
+        }
     </tbody>
 </table>

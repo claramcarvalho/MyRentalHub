@@ -1,15 +1,20 @@
 ﻿@model IEnumerable<RentalProperties.Models.EventInProperty>
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Events in Properties</h1>
 
-<p>
+@if ((await AuthorizationService.AuthorizeAsync(User, "MustBeManager")).Succeeded)
+{
+    <p>
     <a asp-action="Create">Create New</a>
-</p>
+    </p> 
+}
 <table class="table">
     <thead>
         <tr>
@@ -35,10 +40,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Property.PropertyId)
+                @Html.DisplayFor(modelItem => item.Property.PropertyName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Apartment.ApartmentId)
+                @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EventTitle)

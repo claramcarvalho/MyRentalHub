@@ -18,6 +18,12 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\images\1\1\" />
+    <Folder Include="wwwroot\images\1\2\" />
+    <Folder Include="wwwroot\images\2\3\" />
+    <Folder Include="wwwroot\images\3\4\" />
+    <Folder Include="wwwroot\images\6\" />
+    <Folder Include="wwwroot\images\0\" />
   </ItemGroup>
 
 </Project>

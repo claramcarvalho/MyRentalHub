@@ -38,6 +38,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>
                     @Html.DisplayNameFor(model => model.Property)
                 </th>
@@ -64,6 +65,7 @@
         </thead>
         <tbody>
             <tr style="background-color:lightgray">
+                <td></td>
                 <td>
                     <select name="queryProperty" class="form-control" asp-items="ViewBag.Properties">
                         <option value="All">All</option>
@@ -118,6 +120,9 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                <img src="/images/@item.PropertyId/@item.ApartmentId/1.jpg" alt="Foto do Apartamento" style="width:150px"/>
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Property.PropertyName)
             </td>
             <td>
@@ -157,7 +162,7 @@
                 {
                     <a asp-controller="MessageFromTenants" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Talk to Manager</a>
                     <text> | </text>
-                    <a asp-controller="Appointments" asp-action="Create" asp-route-id="@item.ApartmentId">Ask for a visit</a>
+                    <a asp-controller="Appointments" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Ask for a visit</a>
 
                 }
             </td>

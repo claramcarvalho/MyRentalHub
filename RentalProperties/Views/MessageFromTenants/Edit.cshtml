@@ -49,7 +49,10 @@
                 {
                     <div class="form-group">
                         <label asp-for="AnswerFromManager" class="control-label"></label>
-                        @if (messageReplied)
+                        @if (
+                                messageReplied ||
+                                (await AuthorizationService.AuthorizeAsync(User, "MustBeOwnerOrAdministrator")).Succeeded
+                            )
                         {
                             <textarea asp-for="AnswerFromManager" class="form-control w-100" rows="10" readonly></textarea>
                         } else

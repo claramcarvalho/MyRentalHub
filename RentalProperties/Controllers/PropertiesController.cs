@@ -28,7 +28,7 @@ namespace RentalProperties.Controllers
         {
             var currentUser = HttpContext.User;
 
-            if (await UserHasPolicy("MustBeOwnerOrAdministrator")) 
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator")) 
             {
                 var rentalPropertiesDBContext = _context.Properties.Include(m => m.Manager).Include(a => a.Apartments).ThenInclude(r => r.Rentals);
                 return View(await rentalPropertiesDBContext.ToListAsync());
@@ -83,15 +83,16 @@ namespace RentalProperties.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(!PropertyNameAlreadyExists(property))
+                List<string> errors = new List<string>();
+                if (!PropertyNameAlreadyExists(property))
                 {
                     property.PostalCode = property.PostalCode.ToUpper();
                     _context.Add(property);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
-
-                ViewData["ErrorMessage"] = "There is already a Property with that same name! Please choose a different name.";
+                errors.Add("There is already a Property with that same name! Please choose a different name.");
+                ViewData["ErrorMessage"] = errors;
                 ViewData["ManagerId"] = await ListOfManagersDependingOnPolicy();
                 return View(property);
 
@@ -206,21 +207,13 @@ namespace RentalProperties.Controllers
             return _context.Properties.Any(e => e.PropertyId == id);
         }
 
-        private async Task<bool> UserHasPolicy(string policyName)
-        {
-            var currentUser = HttpContext.User;
-            var authorizationService = HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();
-            var authorizationResult = await authorizationService.AuthorizeAsync(currentUser, null, policyName);
-            return authorizationResult.Succeeded;
-        }
-
         public async Task<SelectList> ListOfManagersDependingOnPolicy()
         {
             var managersFromDatabase = _context.UserAccounts.Where(
                 m => m.UserType == UserType.Manager
                 );
 
-            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (!await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);

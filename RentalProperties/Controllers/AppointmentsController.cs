@@ -28,10 +28,10 @@ namespace RentalProperties.Controllers
 
             var currentUser = HttpContext.User;
             int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if (await UserHasPolicy("MustBeTenant"))
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeTenant"))
             {
                 rentalPropertiesDBContext = rentalPropertiesDBContext.Where(a => a.TenantId == userId).ToList();
-            } else if (await UserHasPolicy("MustBeManager"))
+            } else if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeManager"))
             {
                 rentalPropertiesDBContext = rentalPropertiesDBContext.Where(a => a.Apartment.Property.ManagerId == userId).ToList();
             }
@@ -48,22 +48,36 @@ namespace RentalProperties.Controllers
             }
 
             var appointment = await _context.Appointments
-                .Include(a => a.Apartment)
+                .Include(a => a.Apartment).ThenInclude(a=>a.Property)
                 .Include(a => a.Tenant)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
             if (appointment == null)
             {
                 return NotFound();
             }
+            if (!await AppointmentForTenantOrManager(appointment))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
 
             return View(appointment);
         }
 
         // GET: Appointments/Create
+        [HttpGet("Appointments/Create")]
         public async Task<IActionResult> Create()
         {
             ViewData["TenantId"] = await CreateSelectListOfTenants();
             ViewData["ApartmentId"] = await CreateSelectListOfApartments();
+            return View();
+        }
+
+        // GET: Appointments/Create/2
+        [HttpGet("Appointments/Create/{apartmentId}")]
+        public async Task<IActionResult> Create(int apartmentId)
+        {
+            ViewData["TenantId"] = await CreateSelectListOfTenants();
+            ViewData["ApartmentId"] = await CreateSelectListOfApartments(apartmentId);
             return View();
         }
 
@@ -96,8 +110,6 @@ namespace RentalProperties.Controllers
             ViewData["ApartmentId"] = await CreateSelectListOfApartments();
             ViewData["TenantId"] = await CreateSelectListOfTenants();
             return View(appointment);
-
-            //////////////CONFERIR TENANT - CONTINUAR DAQUI
         }
 
         // GET: Appointments/Edit/5
@@ -108,13 +120,20 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            var appointment = await _context.Appointments.FindAsync(id);
+            var appointment = await _context.Appointments
+                .Include(a => a.Apartment).ThenInclude(a => a.Property)
+                .Include(a => a.Tenant)
+                .FirstOrDefaultAsync(m => m.AppointmentId == id);
             if (appointment == null)
             {
                 return NotFound();
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentId", appointment.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "UserId", appointment.TenantId);
+            if (!await AppointmentForTenantOrManager(appointment))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
+            ViewData["ApartmentId"] = await CreateSelectListOfApartments();
+            ViewData["TenantId"] = await CreateSelectListOfTenants();
             return View(appointment);
         }
 
@@ -123,7 +142,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,TenantId,ApartmentId,VisitDate")] Appointment appointment)
+        public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,TenantId,ApartmentId,VisitDate")] Appointment appointment, bool confirmationStatus)
         {
             if (id != appointment.AppointmentId)
             {
@@ -132,6 +151,19 @@ namespace RentalProperties.Controllers
 
             if (ModelState.IsValid)
             {
+                bool needConfirmation = false;
+                if (appointment.VisitDate < DateOnly.FromDateTime(DateTime.Now) && confirmationStatus == false)
+                {
+                    ViewData["ShowConfirmation"] = true;
+                    ViewBag.ConfirmationMessage = "You are scheduling a visit for the past. Do you wish to continue?";
+                    needConfirmation = true;
+                }
+                if (needConfirmation)
+                {
+                    ViewData["ApartmentId"] = await CreateSelectListOfApartments();
+                    ViewData["TenantId"] = await CreateSelectListOfTenants();
+                    return View(appointment);
+                }
                 try
                 {
                     _context.Update(appointment);
@@ -164,12 +196,16 @@ namespace RentalProperties.Controllers
             }
 
             var appointment = await _context.Appointments
-                .Include(a => a.Apartment)
+                .Include(a => a.Apartment).ThenInclude(a => a.Property)
                 .Include(a => a.Tenant)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
             if (appointment == null)
             {
                 return NotFound();
+            }
+            if (!await AppointmentForTenantOrManager(appointment))
+            {
+                return RedirectToAction("AccessDenied", "Home");
             }
 
             return View(appointment);
@@ -195,18 +231,33 @@ namespace RentalProperties.Controllers
             return _context.Appointments.Any(e => e.AppointmentId == id);
         }
 
-        private async Task<bool> UserHasPolicy(string policyName)
-        {
-            var currentUser = HttpContext.User;
-            var authorizationService = HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();
-            var authorizationResult = await authorizationService.AuthorizeAsync(currentUser, null, policyName);
-            return authorizationResult.Succeeded;
-        }
-
         private async Task<SelectList> CreateSelectListOfApartments()
         {
             var selectListApartments = _context.Apartments.Include(a => a.Property).ToList();
-            if (await UserHasPolicy("MustBeManager"))
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeManager"))
+            {
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+                selectListApartments = selectListApartments.Where(a => a.Property.ManagerId == userId).ToList();
+            }
+
+            //Creatting list of Apartments
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (var item in selectListApartments)
+            {
+                string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
+                SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
+                list.Add(selectListItem);
+            }
+            SelectList listToReturn = new SelectList(list, "Value", "Text");
+
+            return listToReturn;
+        }
+
+        private async Task<SelectList> CreateSelectListOfApartments(int apId)
+        {
+            var selectListApartments = _context.Apartments.Include(a => a.Property).Where(a=>a.ApartmentId==apId).ToList();
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeManager"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -229,7 +280,7 @@ namespace RentalProperties.Controllers
         private async Task<SelectList> CreateSelectListOfTenants()
         {           
             var selectListTenants = _context.UserAccounts.Where(u => u.UserType == UserType.Tenant).ToList();
-            if (await UserHasPolicy("MustBeTenant"))
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeTenant"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -246,6 +297,20 @@ namespace RentalProperties.Controllers
             SelectList listToReturn = new SelectList(list, "Value", "Text");
 
             return listToReturn;
+        }
+
+        private async Task<bool> AppointmentForTenantOrManager(Appointment appointment)
+        {
+            var currentUser = HttpContext.User;
+            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            if (appointment.TenantId == userId || 
+                appointment.Apartment.Property.ManagerId == userId ||
+                await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

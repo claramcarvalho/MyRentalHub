@@ -394,7 +394,7 @@ namespace RentalProperties.Controllers
             foreach (var item in _context.Apartments
                 .Include(a => a.Property))
             {
-                if (await UserHasPolicy("MustBeOwnerOrAdministrator") || CurrentUserIsAllowedToManageProperty(item))
+                if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator") || CurrentUserIsAllowedToManageProperty(item))
                 {
                     string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
                     SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
@@ -414,7 +414,7 @@ namespace RentalProperties.Controllers
                 .Include(a => a.Property)
                 .Where(a => a.ApartmentId == apartmentId))
             {
-                if (await UserHasPolicy("MustBeOwnerOrAdministrator") || CurrentUserIsAllowedToManageProperty(item))
+                if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator") || CurrentUserIsAllowedToManageProperty(item))
                 {
                     string text = item.ApartmentId.ToString() + " - " + item.Property.PropertyName.ToString() + " - Apt " + item.ApartmentNumber.ToString();
                     SelectListItem selectListItem = new SelectListItem(text, item.ApartmentId.ToString());
@@ -505,7 +505,7 @@ namespace RentalProperties.Controllers
         {
             var propertiesFromDatabase = _context.Properties.AsQueryable();
 
-            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (!await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -520,14 +520,6 @@ namespace RentalProperties.Controllers
             return listOfProperties;
         }
 
-        private async Task<bool> UserHasPolicy(string policyName)
-        {
-            var currentUser = HttpContext.User;
-            var authorizationService = HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();
-            var authorizationResult = await authorizationService.AuthorizeAsync(currentUser, null, policyName);
-            return authorizationResult.Succeeded;
-        }
-
         private async Task<IQueryable<Rental>> GetRentalsDependingOnPolicy()
         {
             var rentalsFromDatabase = _context.Rentals
@@ -536,7 +528,7 @@ namespace RentalProperties.Controllers
                 .Where(t => t.Tenant.UserType == UserType.Tenant)
                 .OrderBy(r => r.FirstDayRental).AsQueryable().AsNoTracking();
 
-            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (!await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -552,7 +544,7 @@ namespace RentalProperties.Controllers
                 .Include(r => r.Apartment).ThenInclude(a => a.Property)
                 .Include(r => r.Tenant)
                 .Where(r => r.RentalId == id).First();
-            if (!await UserHasPolicy("MustBeOwnerOrAdministrator"))
+            if (!await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
             {
                 var currentUser = HttpContext.User;
                 int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
