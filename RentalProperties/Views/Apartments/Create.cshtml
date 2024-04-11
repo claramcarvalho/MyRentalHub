@@ -19,9 +19,9 @@
         </div>
     }
 }
+<form asp-action="Create" enctype="multipart/form-data">
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="PropertyId" class="control-label"></label>
@@ -61,10 +61,13 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>
+    </div>
+    <div class="col-md-8">
+            <label for="fileInput">Selecione uma foto:</label>
+            <input type="file" class="form-control-file" id="fileInput" name="fileInput">
     </div>
 </div>
-
+</form>
 <div>
     <a asp-action="Index">View List of Apartments</a><br/>
     <a asp-controller="Properties" asp-action="Index">View List of Properties</a>

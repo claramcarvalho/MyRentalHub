@@ -37,6 +37,14 @@
       "PackagePath": "staticwebassets\\images\\3\\4\\1.jpg"
     },
     {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\6\\11\\1.jpg",
+      "PackagePath": "staticwebassets\\images\\6\\11\\1.jpg"
+    },
+    {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\7\\10\\1.jpg",
+      "PackagePath": "staticwebassets\\images\\7\\10\\1.jpg"
+    },
+    {
       "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\js\\GetApartmentPrice.js",
       "PackagePath": "staticwebassets\\js\\GetApartmentPrice.js"
     },

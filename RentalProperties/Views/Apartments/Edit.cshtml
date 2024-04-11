@@ -1,8 +1,10 @@
 ﻿@model RentalProperties.Models.Apartment
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string defaultImagePath = "/images/0/1.jpg";
 }
 
 <h1>Edit</h1>
@@ -19,9 +21,9 @@
         </div>
     }
 }
+<form asp-action="Edit" enctype="multipart/form-data">
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ApartmentId" />
             <div class="form-group">
@@ -63,10 +65,29 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form>
+            
+    </div>
+    <div class="col-md-4">
+        <label for="fileInput">Select a picture:</label>
+        <input type="file" class="form-control-file" id="fileInput" name="fileInput">    
+    </div>
+    <div class="col-sm-4">
+        @{
+            var photoPath = $"/images/{Model.PropertyId}/{Model.ApartmentId}/1.jpg";
+            var webRootPath = env.WebRootPath;
+            var physicalPath = $"{webRootPath}{photoPath}";
+            if (System.IO.File.Exists(physicalPath))
+            {
+                <img src=@photoPath alt="Foto do Apartamento" style="width:400px" />
+            }
+            else
+            {
+                <img src=@defaultImagePath alt="Foto do Apartamento" style="width:400px" />
+            }
+        }
     </div>
 </div>
-
+</form>
 <div>
     <a asp-action="Index">View List of Apartments</a>
 </div>

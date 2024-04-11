@@ -1,9 +1,12 @@
 ﻿@model IEnumerable<RentalProperties.Models.Apartment>
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+
 @{
     ViewData["Title"] = "List of Apartments";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string defaultImagePath = "/images/0/1.jpg";
 }
 
 <h1>List of Apartments</h1>
@@ -118,55 +121,67 @@
                 <td></td>
             </tr>
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                <img src="/images/@item.PropertyId/@item.ApartmentId/1.jpg" alt="Foto do Apartamento" style="width:150px"/>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Property.PropertyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApartmentNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NbOfBeds)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NbOfBaths)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NbOfParkingSpots)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PriceAnnounced)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnimalsAccepted)
-            </td>
-            <td>
-                @{
-                    var authNotTenant = (await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded; 
-                }
-                @if (authNotTenant)
-                {<a asp-action="Edit" asp-route-id="@item.ApartmentId">Edit</a>
-                <text> | </text> }
-                @if (authNotTenant)
-                {<a asp-action="Details" asp-route-id="@item.ApartmentId">Details</a>
-                <text> | </text> }
-                @if (authNotTenant)
-                {<a asp-action="Delete" asp-route-id= "@item.ApartmentId">Delete</a>}
-                @{
-                    var authTenant = (await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded;
-                }
-                @if (authTenant)
-                {
-                    <a asp-controller="MessageFromTenants" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Talk to Manager</a>
-                    <text> | </text>
-                    <a asp-controller="Appointments" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Ask for a visit</a>
+                <tr>
+                    <td>
+                        @{
+                            var photoPath = $"/images/{item.PropertyId}/{item.ApartmentId}/1.jpg";
+                            var webRootPath = env.WebRootPath;
+                            var physicalPath = $"{webRootPath}{photoPath}";
+                            if (System.IO.File.Exists(physicalPath))
+                            {
+                                <img src=@photoPath alt="Foto do Apartamento" style="width:150px" />
+                            }
+                            else
+                            {
+                                <img src=@defaultImagePath alt="Foto do Apartamento" style="width:150px" />
+                            }
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Property.PropertyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ApartmentNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbOfBeds)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbOfBaths)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbOfParkingSpots)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PriceAnnounced)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AnimalsAccepted)
+                    </td>
+                    <td>
+                        @{
+                            var authNotTenant = (await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded; 
+                        }
+                        @if (authNotTenant)
+                        {<a asp-action="Edit" asp-route-id="@item.ApartmentId">Edit</a>
+                        <text> | </text> }
+                        @if (authNotTenant)
+                        {<a asp-action="Details" asp-route-id="@item.ApartmentId">Details</a>
+                        <text> | </text> }
+                        @if (authNotTenant)
+                        {<a asp-action="Delete" asp-route-id= "@item.ApartmentId">Delete</a>}
+                        @{
+                            var authTenant = (await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded;
+                        }
+                        @if (authTenant)
+                        {
+                            <a asp-controller="MessageFromTenants" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Talk to Manager</a>
+                            <text> | </text>
+                            <a asp-controller="Appointments" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Ask for a visit</a>
 
-                }
-            </td>
-        </tr>
+                        }
+                    </td>
+                </tr>
 }
     </tbody>
 </table>

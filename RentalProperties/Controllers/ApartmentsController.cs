@@ -19,10 +19,12 @@ namespace RentalProperties.Controllers
     public class ApartmentsController : Controller
     {
         private readonly RentalPropertiesDBContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ApartmentsController(RentalPropertiesDBContext context)
+        public ApartmentsController(RentalPropertiesDBContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Apartments
@@ -100,8 +102,9 @@ namespace RentalProperties.Controllers
         [Authorize(Policy = "CantBeTenant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ApartmentId,PropertyId,ApartmentNumber,NbOfBeds,NbOfBaths,NbOfParkingSpots,PriceAnnounced,AnimalsAccepted")] Apartment apartment, bool confirmationStatus)
+        public async Task<IActionResult> Create([Bind("ApartmentId,PropertyId,ApartmentNumber,NbOfBeds,NbOfBaths,NbOfParkingSpots,PriceAnnounced,AnimalsAccepted")] Apartment apartment, bool confirmationStatus, IFormFile fileInput)
         {
+            ModelState.Remove("fileInput");
             if (ModelState.IsValid)
             {
                 bool dataOk = true;
@@ -127,13 +130,17 @@ namespace RentalProperties.Controllers
 
                 _context.Add(apartment);
                 await _context.SaveChangesAsync();
+
+                if (fileInput!=null)
+                    await SavePhotoApartmentInWWWRoot(apartment, fileInput);
+
                 if (EndsWithANumber())
                 {
                     return RedirectToAction("Index", "Properties");
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PropertyId"] = GetListOfProperties(apartment.PropertyId);
+            ViewData["PropertyId"] = await GetListOfProperties(apartment.PropertyId);
             return View(apartment);
         }
 
@@ -167,13 +174,14 @@ namespace RentalProperties.Controllers
         [Authorize(Policy = "CantBeTenant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ApartmentId,PropertyId,ApartmentNumber,NbOfBeds,NbOfBaths,NbOfParkingSpots,PriceAnnounced,AnimalsAccepted")] Apartment apartment, bool confirmationStatus)
+        public async Task<IActionResult> Edit(int id, [Bind("ApartmentId,PropertyId,ApartmentNumber,NbOfBeds,NbOfBaths,NbOfParkingSpots,PriceAnnounced,AnimalsAccepted")] Apartment apartment, bool confirmationStatus, IFormFile fileInput)
         {
             if (id != apartment.ApartmentId)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("photo");
             if (ModelState.IsValid)
             {
                 bool dataOk = true;
@@ -215,6 +223,8 @@ namespace RentalProperties.Controllers
 
                     _context.Update(updateThisApartment);
                     await _context.SaveChangesAsync();
+
+                    await SavePhotoApartmentInWWWRoot(updateThisApartment, fileInput);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -549,5 +559,26 @@ namespace RentalProperties.Controllers
             return newListOfApartments;
         }
 
+        private async Task SavePhotoApartmentInWWWRoot(Apartment apartment, IFormFile photo)
+        {
+            //Creating new folder
+            string newDirectory = Path.Combine(
+                _environment.WebRootPath,
+                "images",
+                apartment.PropertyId.ToString(),
+                apartment.ApartmentId.ToString());
+
+            if (!Directory.Exists(newDirectory))
+            {
+                Directory.CreateDirectory(newDirectory);
+            }
+            string fileName = $"1{Path.GetExtension(photo.FileName)}";
+            string filePath = Path.Combine(newDirectory, fileName);
+
+            using (var stream = new FileStream(filePath,FileMode.Create))
+            {
+                await photo.CopyToAsync(stream);
+            }
+        }
     }
 }
