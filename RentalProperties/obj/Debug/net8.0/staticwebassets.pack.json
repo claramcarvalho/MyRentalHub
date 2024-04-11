@@ -41,8 +41,28 @@
       "PackagePath": "staticwebassets\\images\\6\\11\\1.jpg"
     },
     {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\6\\13\\1.jpg",
+      "PackagePath": "staticwebassets\\images\\6\\13\\1.jpg"
+    },
+    {
       "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\7\\10\\1.jpg",
       "PackagePath": "staticwebassets\\images\\7\\10\\1.jpg"
+    },
+    {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\8\\14\\1.jpg",
+      "PackagePath": "staticwebassets\\images\\8\\14\\1.jpg"
+    },
+    {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\brand\\logo_beige.png",
+      "PackagePath": "staticwebassets\\images\\brand\\logo_beige.png"
+    },
+    {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\brand\\logo_black.png",
+      "PackagePath": "staticwebassets\\images\\brand\\logo_black.png"
+    },
+    {
+      "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\images\\brand\\logo_white.png",
+      "PackagePath": "staticwebassets\\images\\brand\\logo_white.png"
     },
     {
       "Id": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\wwwroot\\js\\GetApartmentPrice.js",

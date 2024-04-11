@@ -3,6 +3,19 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to MyRentalHub!</h1>
+    <p>Introducing My Rental Hub, a platform designed to facilitate the rental process for property owners, managers, and potential tenants alike.</p>
+    <p>Tailored to meet the diverse needs of its users, the web app empowers property owners and administrators to efficiently manage their properties and oversee operations with ease.</p>
+    <p>Are you a potential tenant? Enjoy a user-friendly interface where you can create your account, browse available apartments suiting your preferences, schedule appointments with property managers, and communicate seamlessly via the platform.</p>
+    <div class="centralized-div">
+        <div>
+            <a asp-controller="UserAccounts" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Users</a>
+            <a asp-controller="Properties" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Properties</a>
+            <a asp-controller="Apartments" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Apartments</a>
+            <a asp-controller="Rentals" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Rentals</a>
+            <a asp-controller="EventInProperties" asp-action="Index" class="btn btn-primary btn-lg big-button">View Events</a>
+            <a asp-controller="MessageFromTenants" asp-action="Index" class="btn btn-primary btn-lg big-button">View Messages</a>
+            <a asp-controller="Appointments" asp-action="Index" class="btn btn-primary btn-lg big-button">View Appointments</a>
+        </div>
+    </div>
 </div>

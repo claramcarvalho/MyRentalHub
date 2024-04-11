@@ -6,3 +6,39 @@
 .centered-table th,
 .centered-table td {
     text-align: center; /* Center the content of table cells */
+}
+
+.centralized-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10vh;
+    /*height: 100vh;  Adjust as needed */
+}
+
+/* Custom styles for big buttons */
+.big-button {
+    font-size: 24px; /* Adjust as needed */
+    padding: 20px 40px; /* Adjust as needed */
+    margin: 10px; /* Adjust as needed */
+    background-color: #90111e;
+    border-color: #90111e;
+}
+
+.big-button:hover {
+    background-color: #d7192c;
+    border-color: #d7192c;
+}
+
+.image-link {
+    height: 50px; /* Defina a altura desejada da imagem */
+    width: 150px;
+}
+
+    .image-link div {
+        background-image: url('../images/brand/logo_white.png');
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        height:50px;
+    }
