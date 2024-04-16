@@ -100,20 +100,17 @@ namespace RentalProperties.Controllers
                     errors.Add("Please select an apartment!");
                     dataOk = false;
                 }
-                if (rental.LastDayRental<rental.FirstDayRental)
-                {
-                    errors.Add("Last Day of Rental can't be before First Day of Rental.");
-                    dataOk = false;
-                }
-                if (RentalInApartmentWithSameFirstDay(rental,false))
-                {
-                    errors.Add("This apartment has already a rental that begins in the same day! Choose another day!");
-                    dataOk = false;
-                }
                 if (RentalInApartmentWithOverlappingDates(rental,false))
                 {
                     errors.Add("This apartment has already a rental which dates overlap the chosen dates! Please verify before adding.");
                     dataOk = false;
+                }
+                if (!dataOk)
+                {
+                    ViewData["ErrorMessage"] = errors;
+                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
+                    ViewData["TenantId"] = GetTenants();
+                    return View(rental);
                 }
                 if (rental.PriceRent == 0 && confirmationStatus == false)
                 {
@@ -123,17 +120,10 @@ namespace RentalProperties.Controllers
                     ViewData["TenantId"] = GetTenants();
                     return View(rental);
                 }
-                if (TenantWithSameFirstDayOfRental(rental) && confirmationStatus==false)
+                if (TenantWithOverlapingDates(rental,false) && confirmationStatus==false)
                 {
                     ViewData["ShowConfirmation"] = true;
-                    ViewBag.ConfirmationMessage = "This tenant has already a rental that starts in the same day. Do you wish to continue?";
-                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
-                    ViewData["TenantId"] = GetTenants();
-                    return View(rental);
-                }
-                if (!dataOk)
-                {
-                    ViewData["ErrorMessage"] = errors;
+                    ViewBag.ConfirmationMessage = "This tenant has already a rental which dates overlap the chosen dates! Do you wish to continue?";
                     ViewData["ApartmentsId"] = await GetListOfApartments(rental);
                     ViewData["TenantId"] = GetTenants();
                     return View(rental);
@@ -146,7 +136,7 @@ namespace RentalProperties.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApartmentsId"] = GetListOfApartments(rental);
+            ViewData["ApartmentsId"] = await GetListOfApartments(rental);
             ViewData["TenantId"] = GetTenants();
             return View(rental);
         }
@@ -195,11 +185,6 @@ namespace RentalProperties.Controllers
                     errors.Add("Last Day of Rental can't be before First Day of Rental.");
                     dataOk = false;
                 }
-                if (RentalInApartmentWithSameFirstDay(rental,true))
-                {
-                    errors.Add("This apartment has already a rental that begins in the same day! Choose another day!");
-                    dataOk = false;
-                }
                 if (RentalInApartmentWithOverlappingDates(rental,true))
                 {
                     errors.Add("This apartment has already a rental which dates overlap the chosen dates! Please verify before adding.");
@@ -208,16 +193,16 @@ namespace RentalProperties.Controllers
                 if (!dataOk)
                 {
                     ViewData["ErrorMessage"] = errors;
-                    ViewData["ApartmentsId"] = GetListOfApartments(rental);
+                    ViewData["ApartmentsId"] = await GetListOfApartments(rental);
                     ViewData["TenantId"] = GetTenants();
                     return View(rental);
                 }
                 bool needConfirmation = false;
                 string message = "";
-                if (TenantWithSameFirstDayOfRental(rental) && confirmationStatus == false)
+                if (TenantWithOverlapingDates(rental,true) && confirmationStatus == false)
                 {
                     ViewData["ShowConfirmationDates"] = true;
-                    message = "This tenant has already a rental that starts in the same day.";
+                    message = "This tenant has already a rental which dates overlap the chosen dates!";
                     needConfirmation = true;
                 }
                 if (rental.PriceRent == 0 && confirmationStatus == false)
@@ -254,6 +239,7 @@ namespace RentalProperties.Controllers
                         updateThisRental.FirstDayRental = rental.FirstDayRental;
                         updateThisRental.LastDayRental = rental.LastDayRental;
                         updateThisRental.PriceRent = rental.PriceRent;
+                        updateThisRental.RentalStatus = rental.RentalStatus;
                     }      
                     _context.Update(updateThisRental);
                     await _context.SaveChangesAsync();
@@ -474,7 +460,21 @@ namespace RentalProperties.Controllers
                     newRental.LastDayRental <= oldRental.LastDayRental)
                 {
                     return false;
-                } 
+                } else
+                {
+                    var overlapsOther = _context.Rentals
+                        .FirstOrDefault(r =>
+                            ((newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
+                            (newRental.LastDayRental >= r.FirstDayRental && newRental.LastDayRental <= r.LastDayRental)) &&
+                            newRental.ApartmentId == r.ApartmentId &&
+                            newRental.RentalId != r.RentalId
+                            );
+                    if (overlapsOther != null)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
             }
             var overlaps = _context.Rentals
             .FirstOrDefault(r =>
@@ -489,12 +489,26 @@ namespace RentalProperties.Controllers
             return false;
         }
 
-        private bool TenantWithSameFirstDayOfRental(Rental newRental)
+        private bool TenantWithOverlapingDates(Rental newRental, bool isEdition)
         {
+            if (isEdition)
+            {
+                if (_context.Rentals
+                .Any(r =>
+                    r.TenantId == newRental.TenantId &&
+                    r.RentalId != newRental.RentalId &&
+                    ((newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
+                      (newRental.LastDayRental >= r.FirstDayRental && newRental.LastDayRental <= r.LastDayRental))))
+                {
+                    return true;
+                }
+                return false;
+            }
             if (_context.Rentals
                 .Any(r => 
                     r.TenantId == newRental.TenantId &&
-                    r.FirstDayRental == newRental.FirstDayRental))
+                    ((newRental.FirstDayRental <= r.LastDayRental && newRental.FirstDayRental >= r.FirstDayRental) ||
+                      (newRental.LastDayRental >= r.FirstDayRental && newRental.LastDayRental <= r.LastDayRental))))
             {
                 return true;
             }

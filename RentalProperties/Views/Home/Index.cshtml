@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
     ViewData["Title"] = "My Rental Hub";
 }
 
@@ -9,11 +11,21 @@
     <p>Are you a potential tenant? Enjoy a user-friendly interface where you can create your account, browse available apartments suiting your preferences, schedule appointments with property managers, and communicate seamlessly via the platform.</p>
     <div class="centralized-div">
         <div>
-            <a asp-controller="UserAccounts" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Users</a>
-            <a asp-controller="Properties" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Properties</a>
-            <a asp-controller="Apartments" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Apartments</a>
-            <a asp-controller="Rentals" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Rentals</a>
-            <a asp-controller="EventInProperties" asp-action="Index" class="btn btn-primary btn-lg big-button">View Events</a>
+            @if ((await AuthorizationService.AuthorizeAsync(User, "MustBeOwnerOrAdministrator")).Succeeded)
+            {
+                <a asp-controller="UserAccounts" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Users</a>
+            }
+            @if ((await AuthorizationService.AuthorizeAsync(User, "CantBeTenant")).Succeeded)
+            {
+                <a asp-controller="Properties" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Properties</a>
+                <a asp-controller="Apartments" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Apartments</a>
+                <a asp-controller="Rentals" asp-action="Index" class="btn btn-primary btn-lg big-button">Manage Rentals</a>
+                <a asp-controller="EventInProperties" asp-action="Index" class="btn btn-primary btn-lg big-button">Events in Properties</a>
+            }
+            @if ((await AuthorizationService.AuthorizeAsync(User, "MustBeTenant")).Succeeded)
+            {
+                <a asp-controller="Apartments" asp-action="Index" class="btn btn-primary btn-lg big-button">Search Apartments</a>
+            }
             <a asp-controller="MessageFromTenants" asp-action="Index" class="btn btn-primary btn-lg big-button">View Messages</a>
             <a asp-controller="Appointments" asp-action="Index" class="btn btn-primary btn-lg big-button">View Appointments</a>
         </div>

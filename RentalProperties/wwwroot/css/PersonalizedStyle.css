@@ -1,11 +1,11 @@
 ﻿.centered-table {
-    width: 50%; /* Set the width of the table */
-    margin: auto; /* Center the table horizontally */
+    width: 80%;
+    margin: auto;
 }
 
 .centered-table th,
 .centered-table td {
-    text-align: center; /* Center the content of table cells */
+    text-align: center;
 }
 
 .centralized-div {
@@ -35,10 +35,49 @@
     width: 150px;
 }
 
-    .image-link div {
-        background-image: url('../images/brand/logo_white.png');
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        height:50px;
+.image-link div {
+    background-image: url('../images/brand/logo_white.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height:50px;
+}
+
+.bg-signed {
+    background-color: #e0ffe1 !important;
+}
+
+.bg-pending {
+    background-color: #ffffe6 !important;
+}
+
+.bg-terminated {
+    background-color: #ffe4e0 !important;
+}
+
+.bg-default {
+    background-color: #ffffff !important;
+}
+
+.timeline {
+    border-spacing: 10px;
+    border-collapse: separate;
+}
+    .timeline th, .timeline td {
+        /*border: 1px solid black;*/
+        background-color: #D7192C;
+        border-radius:10px;
+        text-align: center;
+        padding: 5px;
+        font-size: x-small !important;
+        text-align: center !important;
+        vertical-align: middle !important;
     }
+
+    .timeline th {
+        color:white;
+    }
+
+.scrollable-container {
+    overflow-x:auto;
+}

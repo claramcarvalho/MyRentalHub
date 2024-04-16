@@ -16,6 +16,7 @@ using static NuGet.Client.ManagedCodeConventions;
 
 namespace RentalProperties.Controllers
 {
+    [Authorize]
     public class ApartmentsController : Controller
     {
         private readonly RentalPropertiesDBContext _context;
@@ -181,7 +182,7 @@ namespace RentalProperties.Controllers
                 return NotFound();
             }
 
-            ModelState.Remove("photo");
+            ModelState.Remove("fileInput");
             if (ModelState.IsValid)
             {
                 bool dataOk = true;
@@ -224,7 +225,8 @@ namespace RentalProperties.Controllers
                     _context.Update(updateThisApartment);
                     await _context.SaveChangesAsync();
 
-                    await SavePhotoApartmentInWWWRoot(updateThisApartment, fileInput);
+                    if (fileInput != null)
+                        await SavePhotoApartmentInWWWRoot(updateThisApartment, fileInput);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -281,6 +283,28 @@ namespace RentalProperties.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Apartments/Timeline/5
+        [Authorize(Policy = "CantBeTenant")]
+        public IActionResult Timeline(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var apartment = _context.Apartments.Include(a => a.Property).Include(a=> a.Rentals).ThenInclude(r=>r.Tenant).FirstOrDefault(m => m.ApartmentId == id);
+            if (apartment == null)
+            {
+                return NotFound();
+            }
+            if (!CurrentUserIsAllowedToManageProperty(apartment))
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
+
+            return View(apartment);
         }
 
         private bool ApartmentExists(int id)

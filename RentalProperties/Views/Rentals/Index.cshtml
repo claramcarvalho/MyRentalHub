@@ -83,13 +83,13 @@
                 </select>
             </td>
             <td>
-                <button class="btn btn-outline-secondary" type="submit" id="button-search">Search</button>
+                <button class="btn btn-danger" type="submit" id="button-search">Search</button>
             </td>
         </tr>
         </form>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr class="@GetRowColor(item.RentalStatus)">
                 <td>
                     @Html.DisplayFor(modelItem => item.Tenant.UserId)
                 </td>
@@ -126,3 +126,23 @@
         }
     </tbody>
 </table>
+
+@functions {
+    string GetRowColor(StatusOfRental rentalStatus)
+    {
+        switch (rentalStatus)
+        {
+            case StatusOfRental.Signed :
+                return "bg-signed";
+                break;
+            case StatusOfRental.Pending:
+                return "bg-pending";
+                break;
+            case StatusOfRental.Terminated:
+                return "bg-terminated";
+                break;
+            default:
+                return "bg-default";
+        }
+    }
+}

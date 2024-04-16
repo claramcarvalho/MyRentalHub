@@ -1,0 +1,212 @@
+﻿@model RentalProperties.Models.Apartment
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+
+@{
+    ViewData["Title"] = "Timeline";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string defaultImagePath = "/images/0/1.jpg";
+
+    DateTime firstDayRental = Model.Rentals.Min(r => r.FirstDayRental).ToDateTime(TimeOnly.MinValue);
+    DateTime lastDayRental = Model.Rentals.Max(r => r.LastDayRental).ToDateTime(TimeOnly.MinValue);
+    TimeSpan daysDiff = lastDayRental - firstDayRental;
+    int days = (int)daysDiff.TotalDays;
+    int fDY = firstDayRental.Year;
+    int fDM = firstDayRental.Month;
+    int lDY = lastDayRental.Year;
+    int lDM = lastDayRental.Month;
+    int years = lDY - fDY;
+    int months = (years) * 12 + (lDM - fDM);
+
+}
+
+<h1>Rental Timeline</h1>
+
+
+<h4>Apartment @Html.DisplayFor(model => model.ApartmentNumber) - Property @Html.DisplayFor(model => model.Property.PropertyName)</h4>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-4 p-4">
+        @{
+            var photoPath = $"/images/{Model.PropertyId}/{Model.ApartmentId}/1.jpg";
+            var webRootPath = env.WebRootPath;
+            var physicalPath = $"{webRootPath}{photoPath}";
+            if (System.IO.File.Exists(physicalPath))
+            {
+                <img src=@photoPath alt="Foto do Apartamento" style="width:300px" />
+            }
+            else
+            {
+                <img src=@defaultImagePath alt="Foto do Apartamento" style="width:300px" />
+            }
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mw-100">
+        <div class="w-100 scrollable-container">
+            <table class="timeline">
+                <thead>
+                    @if (years != 0)
+                    {
+                        <tr>
+                            @for (DateTime year = firstDayRental; year.Year <= lastDayRental.Year; year = year.AddYears(1))
+                            {
+                                int colspan = 365;
+                                if (year == firstDayRental)
+                                {
+                                    DateTime lastDayfirstYear = new DateTime(firstDayRental.Year, 12, 31);
+                                    TimeSpan timespan = lastDayfirstYear - firstDayRental;
+                                    int daysFirstYear = (int)timespan.TotalDays + 1;
+                                    colspan = daysFirstYear;
+                                }
+                                else if (year.Year == lastDayRental.Year)
+                                {
+                                    DateTime firstDayLastYear = new DateTime(lastDayRental.Year, 01, 01);
+                                    TimeSpan timespan = lastDayRental - firstDayLastYear;
+                                    int daysLastYear = (int)timespan.TotalDays + 1;
+                                    colspan = daysLastYear;
+                                } else if (DateTime.IsLeapYear(year.Year))
+                                {
+                                    colspan = 366;
+                                }
+                                <th colspan="@colspan" class="fs-6">
+                                    @year.Year
+                                </th>
+                            }
+                        </tr>
+                    }
+                    @if (months != 0)
+                    {
+                        <tr>
+                            @for (DateTime month = firstDayRental; ((month.Year < lastDayRental.Year) || (month.Month <= lastDayRental.Month)); month = month.AddMonths(1))
+                            {
+                                int colspan = 31;
+                                if (month == firstDayRental)
+                                {
+                                    int lastDayOfMonth = DateTime.DaysInMonth(month.Year, month.Month);
+                                    colspan = lastDayOfMonth - month.Day + 1;
+                                }
+                                else if (month.Month == lastDayRental.Month && month.Year == lastDayRental.Year)
+                                {
+                                    colspan = lastDayRental.Day;
+                                } else
+                                {
+                                    colspan = DateTime.DaysInMonth(month.Year, month.Month);
+                                }
+                                <th colspan="@colspan">
+                                    @month.ToString("MMMM")
+                                </th>
+                            }
+                        </tr>
+                    }
+                    <tr>
+                        @for (DateTime day = firstDayRental; day <= lastDayRental; day = day.AddDays(1))
+                        {
+                            <th>
+                                @day.ToString("dd")
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @{
+                            DateOnly firstDay = new DateOnly(firstDayRental.Year, firstDayRental.Month, firstDayRental.Day);
+                            DateOnly lastDay = new DateOnly(lastDayRental.Year, lastDayRental.Month, lastDayRental.Day);
+                        
+                        for (DateOnly day = firstDay; day <= lastDay; day = day.AddDays(1))
+                        {
+                            if (day == DateOnly.FromDateTime(DateTime.Today))
+                            {
+                                <td class="@GetRowColor(day)" id="thisIsToday">
+                                    <div style="width:20px;height:20px;background-color:red !important;"></div>
+                                </td>
+                            } else
+                            {
+                                <td class="@GetRowColor(day)">
+                                    <div style="width:20px;height:20px">@GetTenantName(day)</div>
+                                </td>
+                            }
+                        }
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    
+
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ApartmentId">Edit</a> |
+    <a asp-action="Index">View List of Apartments</a> |
+    <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model?.Property.PropertyId">Go to Property Details</a>
+
+</div>
+
+<script>
+    // Função para centralizar a barra de rolagem na célula do dia de hoje
+    window.onload = function () {
+        scrollToToday();
+    };
+
+    function scrollToToday() {
+        var todayCell = document.getElementById('thisIsToday');
+        if (todayCell) {
+            // Obtém a posição do centro da célula do dia de hoje
+            var todayCellCenter = todayCell.getBoundingClientRect().left + (todayCell.offsetWidth / 2);
+            // Obtém a largura da div que contém o scrollbar
+            var containerWidth = document.querySelector('.scrollable-container').offsetWidth;
+            // Obtém a largura da janela de visualização
+            var windowWidth = window.innerWidth || document.documentElement.clientWidth;
+            console.log("Container Width:", containerWidth);
+            console.log("Window Width:", windowWidth);
+            // Calcula o deslocamento necessário para centralizar a célula do dia de hoje
+            var scrollTo = todayCellCenter - (containerWidth / 2);
+            // Limita o deslocamento para manter a célula do dia de hoje dentro da área visível
+            //scrollTo = Math.max(0, Math.min(scrollTo, containerWidth - windowWidth));
+            // Rola para o deslocamento calculado
+            document.querySelector('.scrollable-container').scrollLeft = scrollTo;
+        }
+    }
+</script>
+
+@functions {
+    string GetRowColor(DateOnly day)
+    {
+        var rentalExists = Model.Rentals.Any(r => r.FirstDayRental <= day && r.LastDayRental >= day);
+        Rental rental = new Rental();
+        if (rentalExists)
+        {
+            rental = Model.Rentals.FirstOrDefault(r => r.FirstDayRental <= day && r.LastDayRental >= day);
+            switch (rental.RentalStatus)
+            {
+                case StatusOfRental.Signed:
+                    return "bg-signed";
+                    break;
+                case StatusOfRental.Pending:
+                    return "bg-pending";
+                    break;
+                case StatusOfRental.Terminated:
+                    return "bg-terminated";
+                    break;
+                default:
+                    return "bg-default";
+            }
+        }
+        return "bg-default";
+    }
+
+    string GetTenantName(DateOnly day)
+    {
+        foreach (Rental rental in Model.Rentals)
+        {
+            if (day>=rental.FirstDayRental && day<=rental.LastDayRental)
+            {
+                return rental.Tenant.FullName;
+            }
+        }
+        return "";
+    }
+}

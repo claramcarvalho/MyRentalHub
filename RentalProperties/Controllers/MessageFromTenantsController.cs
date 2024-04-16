@@ -12,6 +12,7 @@ using RentalProperties.Models;
 
 namespace RentalProperties.Controllers
 {
+    [Authorize]
     public class MessageFromTenantsController : Controller
     {
         private readonly RentalPropertiesDBContext _context;
@@ -24,8 +25,18 @@ namespace RentalProperties.Controllers
         // GET: MessageFromTenants
         public async Task<IActionResult> Index()
         {
-            var rentalPropertiesDBContext = _context.MessagesFromTenants.Include(m => m.Apartment).ThenInclude(a=>a.Property).Include(m => m.Tenant);
-            return View(await rentalPropertiesDBContext.ToListAsync());
+            var rentalPropertiesDBContext = _context.MessagesFromTenants.Include(m => m.Apartment).ThenInclude(a=>a.Property).Include(m => m.Tenant).ToList();
+
+            var currentUser = HttpContext.User;
+            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeTenant"))
+            {
+                rentalPropertiesDBContext = rentalPropertiesDBContext.Where(u => u.TenantId == userId).ToList();
+            } else if (await RentalWebsite.UserHasPolicy(HttpContext, "MustBeManager"))
+            {
+                rentalPropertiesDBContext = rentalPropertiesDBContext.Where(r => r.Apartment.Property.ManagerId == userId).ToList();
+            }
+            return View(rentalPropertiesDBContext);
         }
 
         /*

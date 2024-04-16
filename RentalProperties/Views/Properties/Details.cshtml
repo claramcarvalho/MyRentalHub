@@ -13,7 +13,8 @@
     <h3 class="d-inline">@Html.DisplayFor(model => model.PropertyName)</h3>
     <span>
         <a asp-action="Edit" asp-route-id="@Model?.PropertyId">Edit</a> |
-        <a asp-action="Delete" asp-route-id="@Model?.PropertyId">Delete</a>
+        <a asp-action="Delete" asp-route-id="@Model?.PropertyId">Delete</a> |
+        <a asp-controller="EventInProperties" asp-action="Create" asp-route-propertyId="@Model?.PropertyId">Create Event</a>
     </span>
     <br />
     <span class="fw-bold">@Html.DisplayNameFor(model => model.Manager): </span>

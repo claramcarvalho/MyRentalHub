@@ -5,7 +5,6 @@
 
 @{
     ViewData["Title"] = "List of Apartments";
-    Layout = "~/Views/Shared/_Layout.cshtml";
     string defaultImagePath = "/images/0/1.jpg";
 }
 
@@ -24,17 +23,19 @@
     </p>
 </div>
 <form method="get" asp-action="Search">
-    <dl class="row">
-        <dt class="col-sm-2">
-            Select Moving Date
-        </dt>
-        <dd class="col-sm-2">
-            <input type="date" name="queryMDate" class="form-control"></input>
-        </dd>
-        <dd class="col-sm-4">
-            <button class="btn btn-outline-secondary" type="submit" id="button-filter">Filter Available Apartments</button>
-        </dd>
-    </dl>
+    <div class="row d-flex justify-content-between align-content-center">
+        <dl class="col-6 row">
+            <dt class="col-4 align-content-center">
+                Select Moving Date
+            </dt>
+            <dd class="col-6">
+                <input type="date" name="queryMDate" class="form-control"></input>
+            </dd>
+        </dl>
+        <div class="col-auto justify-content-end">
+            <button class="btn btn-danger" type="submit" id="button-filter">Filter Available Apartments</button>
+        </div>
+    </div>
     @if (ViewBag.Filters != null){
         <div class="text-danger"> @ViewBag.Filters </div>
     }

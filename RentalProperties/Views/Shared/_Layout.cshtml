@@ -1,5 +1,16 @@
-﻿@using Microsoft.AspNetCore.Authorization
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
+
+@{
+    var httpContext = ViewContext.HttpContext;
+    var currentUser = httpContext.User;
+    string userFullNameClaim = "";
+    if (currentUser.Identity.IsAuthenticated)
+    {
+        userFullNameClaim = currentUser.FindFirst(ClaimTypes.Name)?.Value;
+    }
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -78,7 +89,7 @@
                     </div>
                     <div class="collapse d-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-link active">Welcome, @ViewBag.UserFullName!</li>
+                            <li class="nav-link active">Welcome, @userFullNameClaim!</li>
                         </ul>
                     </div>
                     <div class="collapse d-inline-flex justify-content-between">

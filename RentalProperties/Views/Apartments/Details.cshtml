@@ -1,124 +1,168 @@
 ﻿@model RentalProperties.Models.Apartment
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string defaultImagePath = "/images/0/1.jpg";
 }
 
 <h1>Apartment Details</h1>
 
-<div>
-    <h4>Apartment @Html.DisplayFor(model => model.ApartmentNumber)</h4>
-    <hr />
-    <span class="fw-bold">@Html.DisplayNameFor(model => model.Property): </span>
-    <span>@Html.DisplayFor(model => model.Property.PropertyName)</span>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.NbOfBeds)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.NbOfBaths)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.NbOfParkingSpots)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AnimalsAccepted)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    @Html.DisplayFor(model => model.NbOfBeds)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.NbOfBaths)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.NbOfParkingSpots)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.AnimalsAccepted)
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PriceAnnounced)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PriceAnnounced)
-        </dd>
-    </dl>
-</div>
-<div>
-    <hr style="width:50%" />
-    <h5 class="d-inline">History of Rentals</h5>
-    <span>
-        <a asp-controller="Rentals" asp-action="Create" asp-route-apartmentId="@Model?.ApartmentId">Add</a>
-    </span>
-    @if (Model.Rentals != null && Model.Rentals.Any())
-    {
-        <table class="table centered-table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().FirstDayRental)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().LastDayRental)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().PriceRent)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().Tenant.FullName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().RentalStatus)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var rental in Model.Rentals.OrderBy(r=>r.FirstDayRental).ToList())
-                {
+
+<h4>Apartment @Html.DisplayFor(model => model.ApartmentNumber)</h4>
+<hr />
+<div class="row">
+    <div class="col-4">
+        @{
+            var photoPath = $"/images/{Model.PropertyId}/{Model.ApartmentId}/1.jpg";
+            var webRootPath = env.WebRootPath;
+            var physicalPath = $"{webRootPath}{photoPath}";
+            if (System.IO.File.Exists(physicalPath))
+            {
+                <img src=@photoPath alt="Foto do Apartamento" style="width:400px" />
+            }
+            else
+            {
+                <img src=@defaultImagePath alt="Foto do Apartamento" style="width:400px" />
+            }
+        }
+    </div>
+    <div class="col-8">
+        <div>
+            <span class="fw-bold">@Html.DisplayNameFor(model => model.Property): </span>
+            <span>@Html.DisplayFor(model => model.Property.PropertyName)</span>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NbOfBeds)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NbOfBaths)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NbOfParkingSpots)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AnimalsAccepted)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
                     <tr>
                         <td>
-                            @(rental.FirstDayRental)
+                            @Html.DisplayFor(model => model.NbOfBeds)
                         </td>
                         <td>
-                            @(rental.LastDayRental)
+                            @Html.DisplayFor(model => model.NbOfBaths)
                         </td>
                         <td>
-                            @(rental.PriceRent)
+                            @Html.DisplayFor(model => model.NbOfParkingSpots)
                         </td>
                         <td>
-                            @(rental.Tenant.FullName)
-                        </td>
-                        <td>
-                            @(rental.RentalStatus)
-                        </td>
-                        <td>
-                            <a asp-controller="Rentals" asp-action="Details" asp-route-id="@rental.RentalId">Details</a>
+                            @Html.DisplayFor(model => model.AnimalsAccepted)
                         </td>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>There is no Rental History for this apartment.</p>
-    }
+                </tbody>
+            </table>
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.PriceAnnounced)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.PriceAnnounced)
+                </dd>
+            </dl>
+        </div>
+        <div>
+            <hr style="width:50%" />
+            <h5 class="d-inline">History of Rentals</h5>
+            <span>
+                <a asp-controller="Rentals" asp-action="Create" asp-route-apartmentId="@Model?.ApartmentId">Add</a> |
+                <a asp-controller="Apartments" asp-action="Timeline" asp-route-id="@Model?.ApartmentId">View Timeline</a>
+            </span>
+            @if (Model.Rentals != null && Model.Rentals.Any())
+            {
+                <table class="table centered-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().FirstDayRental)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().LastDayRental)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().PriceRent)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().Tenant.FullName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Rentals.FirstOrDefault().RentalStatus)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rental in Model.Rentals.OrderBy(r => r.FirstDayRental).ToList())
+                        {
+                            <tr class="@GetRowColor(rental.RentalStatus)">
+                                <td>
+                                    @(rental.FirstDayRental)
+                                </td>
+                                <td>
+                                    @(rental.LastDayRental)
+                                </td>
+                                <td>
+                                    @(rental.PriceRent)
+                                </td>
+                                <td>
+                                    @(rental.Tenant.FullName)
+                                </td>
+                                <td>
+                                    @(rental.RentalStatus)
+                                </td>
+                                <td>
+                                    <a asp-controller="Rentals" asp-action="Details" asp-route-id="@rental.RentalId">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>There is no Rental History for this apartment.</p>
+            }
+        </div>
+    </div>
 </div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.ApartmentId">Edit</a> |
     <a asp-action="Index">View List of Apartments</a> | 
     <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model?.Property.PropertyId">Go to Property Details</a>
 
 </div>
+
+@functions {
+    string GetRowColor(StatusOfRental rentalStatus)
+    {
+        switch (rentalStatus)
+        {
+            case StatusOfRental.Signed:
+                return "bg-signed";
+                break;
+            case StatusOfRental.Pending:
+                return "bg-pending";
+                break;
+            case StatusOfRental.Terminated:
+                return "bg-terminated";
+                break;
+            default:
+                return "bg-default";
+        }
+    }
+}

@@ -31,7 +31,7 @@ namespace RentalProperties.Controllers
                 string type = userFound.UserType.ToString();
                 //Creating the security context
                 var claims = new List<Claim> {
-                    new Claim(ClaimTypes.Name, userFound.UserName),
+                    new Claim(ClaimTypes.Name, userFound.FullName),
                     new Claim(ClaimTypes.NameIdentifier, userFound.UserId.ToString()),
                     new Claim("Type",type)
                 };
@@ -74,7 +74,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([Bind("UserId,UserType,UserName,UserPassword,DateCreated,FirstName,LastName,UserStatus")] UserAccount userAccount)
+        public async Task<IActionResult> SignUp([Bind("UserId,UserType,UserName,UserPassword,UserConfirmPassword,DateCreated,FirstName,LastName,UserStatus")] UserAccount userAccount)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +97,7 @@ namespace RentalProperties.Controllers
                 ClaimsPrincipal userPrincipal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync("MyCookieAuth", userPrincipal);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Identity");
             }
             return View(userAccount);
         }

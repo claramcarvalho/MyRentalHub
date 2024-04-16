@@ -23,6 +23,14 @@ namespace RentalProperties
         [DisplayName("Password")]
         public string UserPassword { get; set; } = null!;
 
+        [Required]
+        [DataType(DataType.Password)]
+        [DisplayName("Confirm Password")]
+        [Compare("UserPassword",ErrorMessage ="Password does not match!")]
+        [NotMapped]
+        public string UserConfirmPassword { get; set; } = null!;
+
+
         [DisplayName("Account Creation Date")]
         [DataType(DataType.Date)]
         public DateTime DateCreated { get; set; }

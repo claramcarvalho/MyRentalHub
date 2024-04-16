@@ -14,6 +14,7 @@ using RentalProperties.DATA;
 
 namespace RentalProperties.Controllers
 {
+    [Authorize]
     public class UserAccountsController : Controller
     {
         private readonly RentalPropertiesDBContext _context;

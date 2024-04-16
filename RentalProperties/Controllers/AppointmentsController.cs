@@ -12,6 +12,7 @@ using RentalProperties.Models;
 
 namespace RentalProperties.Controllers
 {
+    [Authorize]
     public class AppointmentsController : Controller
     {
         private readonly RentalPropertiesDBContext _context;
