@@ -16,6 +16,7 @@ namespace RentalProperties.DATA
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<EventInProperty> EventsInProperties { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<ManagerAvailability> ManagerAvailabilities { get; set; }
 
 
 
@@ -99,8 +100,13 @@ namespace RentalProperties.DATA
                     .HasForeignKey(d => d.TenantId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
+
+            modelBuilder.Entity<ManagerAvailability>(entity =>
+            {
+                entity.HasOne(d => d.Manager).WithMany(p => p.ManagerAvailabilities)
+                    .HasForeignKey(d => d.ManagerAvailabilityId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
-
-
     }
 }
