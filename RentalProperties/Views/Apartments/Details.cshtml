@@ -20,11 +20,11 @@
             var physicalPath = $"{webRootPath}{photoPath}";
             if (System.IO.File.Exists(physicalPath))
             {
-                <img src=@photoPath alt="Foto do Apartamento" style="width:400px" />
+                <img src=@photoPath alt="Foto do Apartamento" style="width:400px; max-width:100%" />
             }
             else
             {
-                <img src=@defaultImagePath alt="Foto do Apartamento" style="width:400px" />
+                <img src=@defaultImagePath alt="Foto do Apartamento" style="width:400px; max-width:100%" />
             }
         }
     </div>

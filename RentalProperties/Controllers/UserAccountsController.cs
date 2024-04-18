@@ -64,7 +64,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserType,UserName,UserPassword,DateCreated,FirstName,LastName,UserStatus")] UserAccount userAccount)
+        public async Task<IActionResult> Create([Bind("UserId,UserType,UserName,UserPassword,UserConfirmPassword,DateCreated,FirstName,LastName,UserStatus")] UserAccount userAccount)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +108,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserType,UserName,UserPassword,DateCreated,FirstName,LastName,UserStatus")] UserAccount userAccount)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserType,UserName,UserPassword,UserConfirmPassword,DateCreated,FirstName,LastName,UserStatus")] UserAccount userAccount)
         {
             if (id != userAccount.UserId)
             {

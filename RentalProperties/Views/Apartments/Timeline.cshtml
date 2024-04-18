@@ -6,8 +6,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string defaultImagePath = "/images/0/1.jpg";
 
-    DateTime firstDayRental = Model.Rentals.Min(r => r.FirstDayRental).ToDateTime(TimeOnly.MinValue);
-    DateTime lastDayRental = Model.Rentals.Max(r => r.LastDayRental).ToDateTime(TimeOnly.MinValue);
+    var rentals = Model.Rentals;
+
+    DateTime firstDayRental = DateTime.Today;
+    DateTime lastDayRental = DateTime.Today;
     TimeSpan daysDiff = lastDayRental - firstDayRental;
     int days = (int)daysDiff.TotalDays;
     int fDY = firstDayRental.Year;
@@ -17,6 +19,19 @@
     int years = lDY - fDY;
     int months = (years) * 12 + (lDM - fDM);
 
+    if (rentals.Count != 0)
+    {
+        firstDayRental = Model.Rentals.Min(r => r.FirstDayRental).ToDateTime(TimeOnly.MinValue);
+        lastDayRental = Model.Rentals.Max(r => r.LastDayRental).ToDateTime(TimeOnly.MinValue);
+        daysDiff = lastDayRental - firstDayRental;
+        days = (int)daysDiff.TotalDays;
+        fDY = firstDayRental.Year;
+        fDM = firstDayRental.Month;
+        lDY = lastDayRental.Year;
+        lDM = lastDayRental.Month;
+        years = lDY - fDY;
+        months = (years) * 12 + (lDM - fDM);
+    }
 }
 
 <h1>Rental Timeline</h1>

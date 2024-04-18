@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var connection = builder.Configuration.GetConnectionString("RentalPropertiesDB");
+var connection = builder.Configuration.GetConnectionString("MyRentalHubDB");
 builder.Services.AddDbContext<RentalProperties.DATA.RentalPropertiesDBContext>(options => 
 options.UseSqlServer(connection));
 builder.Services.AddControllersWithViews();
