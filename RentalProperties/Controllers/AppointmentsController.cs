@@ -77,9 +77,14 @@ namespace RentalProperties.Controllers
         [HttpGet("Appointments/Create/{apartmentId}")]
         public async Task<IActionResult> Create(int apartmentId)
         {
-            ViewData["TenantId"] = await CreateSelectListOfTenants();
-            ViewData["ApartmentId"] = await CreateSelectListOfApartments(apartmentId);
-            return View();
+            if(apartmentId!=0)
+            {
+                ViewData["TenantId"] = await CreateSelectListOfTenants();
+                ViewData["ApartmentId"] = await CreateSelectListOfApartments(apartmentId);
+                ViewData["AvailableSpots"] = GetListOfSpots(apartmentId);
+                return View();
+            }
+            return RedirectToAction(nameof(Create));
         }
 
         // POST: Appointments/Create
@@ -87,12 +92,15 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppointmentId,TenantId,ApartmentId,VisitDate")] Appointment appointment, bool confirmationStatus)
+        public async Task<IActionResult> Create([Bind("AppointmentId,TenantId,ApartmentId")] Appointment appointment, bool confirmationStatus, int slotId)
         {
             if (ModelState.IsValid)
             {
                 bool needConfirmation = false;
-                if (appointment.VisitDate<DateOnly.FromDateTime(DateTime.Now) && confirmationStatus == false)
+                ManagerSlot slotSelected = _context.ManagerSlots.FirstOrDefault(s => s.SlotId == slotId);
+                DateTime dateSelected = slotSelected.AvailableSlot;
+                appointment.VisitDate = dateSelected;
+                if (appointment.VisitDate<DateTime.Now && confirmationStatus == false)
                 {
                     ViewData["ShowConfirmation"] = true;
                     ViewBag.ConfirmationMessage = "You are scheduling a visit for the past. Do you wish to continue?";
@@ -105,6 +113,9 @@ namespace RentalProperties.Controllers
                     return View(appointment);
                 }
                 _context.Add(appointment);
+                await _context.SaveChangesAsync();
+                slotSelected.IsAlreadyScheduled = true;
+                _context.Update(slotSelected);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -133,8 +144,10 @@ namespace RentalProperties.Controllers
             {
                 return RedirectToAction("AccessDenied", "Home");
             }
-            ViewData["ApartmentId"] = await CreateSelectListOfApartments();
             ViewData["TenantId"] = await CreateSelectListOfTenants();
+            ViewData["ApartmentId"] = await CreateSelectListOfApartments(appointment.ApartmentId);
+            ViewData["AvailableSpots"] = GetListOfSpots(appointment.ApartmentId);
+
             return View(appointment);
         }
 
@@ -143,7 +156,7 @@ namespace RentalProperties.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,TenantId,ApartmentId,VisitDate")] Appointment appointment, bool confirmationStatus)
+        public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,TenantId,ApartmentId")] Appointment appointment, bool confirmationStatus, int slotId)
         {
             if (id != appointment.AppointmentId)
             {
@@ -153,7 +166,20 @@ namespace RentalProperties.Controllers
             if (ModelState.IsValid)
             {
                 bool needConfirmation = false;
-                if (appointment.VisitDate < DateOnly.FromDateTime(DateTime.Now) && confirmationStatus == false)
+
+                //getting old visit date
+                DateTime oldVisitDate = _context.Appointments.FirstOrDefault(a => a.AppointmentId == appointment.AppointmentId).VisitDate;
+                
+                //getting slot to free
+                Apartment ap = _context.Apartments.Include(a => a.Property).FirstOrDefault(a => a.ApartmentId == appointment.ApartmentId);
+                int managerId = ap.Property.ManagerId;
+
+                //getting and setting new date of visit
+                var slotSelected = _context.ManagerSlots.FirstOrDefault(s => s.SlotId == slotId);
+                DateTime dateSelected = slotSelected.AvailableSlot;
+                //appointment.VisitDate = dateSelected;
+
+                if (dateSelected < DateTime.Now && confirmationStatus == false)
                 {
                     ViewData["ShowConfirmation"] = true;
                     ViewBag.ConfirmationMessage = "You are scheduling a visit for the past. Do you wish to continue?";
@@ -167,7 +193,21 @@ namespace RentalProperties.Controllers
                 }
                 try
                 {
-                    _context.Update(appointment);
+                    //updating appointment
+                    var appointmentToUpdate = _context.Appointments.FirstOrDefault(a => a.AppointmentId == appointment.AppointmentId);
+                    appointmentToUpdate.VisitDate = dateSelected;
+                    _context.Update(appointmentToUpdate);
+                    
+                    //updating slot selected
+                    slotSelected.IsAlreadyScheduled = true;
+                    _context.Update(slotSelected);
+
+                    //updating old slot
+                    var oldSlot = _context.ManagerSlots.FirstOrDefault(s => s.AvailableSlot == oldVisitDate && s.ManagerId == managerId);
+                    oldSlot.IsAlreadyScheduled = false;
+                    _context.Update(oldSlot);
+
+                    //saving
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -220,7 +260,21 @@ namespace RentalProperties.Controllers
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment != null)
             {
+                //selecting date, time from appointment that is about to be deleted
+                DateTime dateSelected = appointment.VisitDate;
+
+                //selecting manager from appointment that is about to be deleted
+                Apartment ap = _context.Apartments.Include(a => a.Property).FirstOrDefault(a => a.ApartmentId == appointment.ApartmentId);
+                int managerId = ap.Property.ManagerId;
+
+                //deleting appointment from database
                 _context.Appointments.Remove(appointment);
+
+                //freeing slot
+                //updating old slot
+                var oldSlot = _context.ManagerSlots.FirstOrDefault(s => s.AvailableSlot == dateSelected && s.ManagerId == managerId);
+                oldSlot.IsAlreadyScheduled = false;
+                _context.Update(oldSlot);
             }
 
             await _context.SaveChangesAsync();
@@ -312,6 +366,26 @@ namespace RentalProperties.Controllers
                 return true;
             }
             return false;
+        }
+
+        private SelectList GetListOfSpots(int apId)
+        {
+            int propertyId = _context.Apartments.FirstOrDefault(a => a.ApartmentId == apId).PropertyId;
+            int managerId = _context.Properties.FirstOrDefault(p => p.PropertyId == propertyId).ManagerId;
+            
+            var selectListSlots = _context.ManagerSlots.Where(u => u.ManagerId == managerId && u.IsAlreadyScheduled==false && u.AvailableSlot > DateTime.Now).OrderBy(s => s.AvailableSlot).ToList();
+
+            //Creatting list of Apartments
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (var item in selectListSlots)
+            {
+                string display = item.AvailableSlot.ToString("dd/MM/yyyy HH:mm");
+                SelectListItem selectListItem = new SelectListItem(display, item.SlotId.ToString());
+                list.Add(selectListItem);
+            }
+            SelectList listToReturn = new SelectList(list, "Value", "Text");
+
+            return listToReturn;
         }
     }
 }

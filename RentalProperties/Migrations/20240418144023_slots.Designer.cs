@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RentalProperties.DATA;
 
@@ -11,9 +12,11 @@ using RentalProperties.DATA;
 namespace RentalProperties.Migrations
 {
     [DbContext(typeof(RentalPropertiesDBContext))]
-    partial class RentalPropertiesDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240418144023_slots")]
+    partial class slots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

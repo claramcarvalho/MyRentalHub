@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RentalProperties.DATA;
 
@@ -11,9 +12,11 @@ using RentalProperties.DATA;
 namespace RentalProperties.Migrations
 {
     [DbContext(typeof(RentalPropertiesDBContext))]
-    partial class RentalPropertiesDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240417174521_CreatingAvailability")]
+    partial class CreatingAvailability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,28 +125,20 @@ namespace RentalProperties.Migrations
                     b.ToTable("EventsInProperties");
                 });
 
-            modelBuilder.Entity("RentalProperties.Models.ManagerSlot", b =>
+            modelBuilder.Entity("RentalProperties.Models.ManagerAvailability", b =>
                 {
-                    b.Property<int>("SlotId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ManagerAvailabilityId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SlotId"));
 
                     b.Property<DateTime>("AvailableSlot")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsAlreadyScheduled")
-                        .HasColumnType("bit");
-
                     b.Property<int>("ManagerId")
                         .HasColumnType("int");
 
-                    b.HasKey("SlotId");
+                    b.HasKey("ManagerAvailabilityId");
 
-                    b.HasIndex("ManagerId");
-
-                    b.ToTable("ManagerSlots");
+                    b.ToTable("ManagerAvailabilities");
                 });
 
             modelBuilder.Entity("RentalProperties.Models.MessageFromTenant", b =>
@@ -337,12 +332,12 @@ namespace RentalProperties.Migrations
                     b.Navigation("Property");
                 });
 
-            modelBuilder.Entity("RentalProperties.Models.ManagerSlot", b =>
+            modelBuilder.Entity("RentalProperties.Models.ManagerAvailability", b =>
                 {
                     b.HasOne("RentalProperties.UserAccount", "Manager")
-                        .WithMany("ManagerSlots")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .WithMany("ManagerAvailabilities")
+                        .HasForeignKey("ManagerAvailabilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Manager");
@@ -419,7 +414,7 @@ namespace RentalProperties.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("ManagerSlots");
+                    b.Navigation("ManagerAvailabilities");
 
                     b.Navigation("Messages");
 

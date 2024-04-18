@@ -1,0 +1,49 @@
+﻿@model IEnumerable<RentalProperties.Models.ManagerSlot>
+@{
+    ViewData["Title"] = "Managers Availability";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>List of Posted Slots</h1>
+
+<p>
+    <a asp-action="Insert">Open New Slots</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Manager)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAlreadyScheduled)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.AvailableSlot >= DateTime.Now)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Manager.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsAlreadyScheduled)
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.SlotId">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

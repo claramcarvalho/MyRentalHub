@@ -1,0 +1,23 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/RentalProperties/FileContentIndex/03bda9ad-58c6-4c25-a981-e467c73fd615.vsidx
+/.vs/RentalProperties/FileContentIndex/154fde26-7adc-46a5-8c92-017ede846d79.vsidx
+/.vs/RentalProperties/FileContentIndex/380f3fcc-e2aa-48bd-9063-fd68a373f22b.vsidx
+/.vs/RentalProperties/FileContentIndex/3d58ce2e-87b4-4000-b060-75460e28ed41.vsidx
+/.vs/RentalProperties/FileContentIndex/478ddb0c-2138-42f2-bec5-5f691d92b9e7.vsidx
+/.vs/RentalProperties/FileContentIndex/547c9078-40a7-4d45-a862-23c763d8f005.vsidx
+*.vsidx
+/.vs/RentalProperties/FileContentIndex/7376da5c-71dc-4a8e-8d62-293aca0f36f9.vsidx
+/.vs/RentalProperties/FileContentIndex/763fc928-6f03-4545-a016-577ec2bc5ba0.vsidx
+/.vs/RentalProperties/FileContentIndex/7dfa75b1-d09e-4fb8-b0c7-27d2e37f73d7.vsidx
+/.vs/RentalProperties/FileContentIndex/88fffa97-5a05-4727-8aa8-d1e5cecbad58.vsidx
+/.vs/RentalProperties/FileContentIndex/b2ef54cd-e083-4a77-a1c0-e96590e1ba21.vsidx
+/.vs/RentalProperties/FileContentIndex/ca78c303-18f5-4362-8e77-773240f8f2b6.vsidx
+/.vs/RentalProperties/FileContentIndex/ddad6269-b463-4bba-b2fa-d49accbdaed0.vsidx
+/.vs/RentalProperties/FileContentIndex/f954f991-2de6-4408-8e1f-5c2e610a360f.vsidx
+/RentalProperties/Migrations/20240417191149_recreatingSlot.cs
+/RentalProperties/Migrations/20240417191149_recreatingSlot.Designer.cs
+/RentalProperties/Migrations/20240417201526_correctingSlots.cs
+/RentalProperties/Migrations/20240417201526_correctingSlots.Designer.cs

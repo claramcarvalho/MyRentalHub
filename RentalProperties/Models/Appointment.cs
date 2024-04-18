@@ -20,8 +20,8 @@ namespace RentalProperties.Models
         [DisplayName("Apartment")]
         public virtual Apartment? Apartment { get; set; }
 
-        [DisplayName("Date of Visit")]
-        public DateOnly VisitDate { get; set; }
+        [DisplayName("Date and Time of Visit")]
+        public DateTime VisitDate { get; set; }
 
     }
 }
