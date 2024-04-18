@@ -176,7 +176,7 @@
                         }
                         @if (authTenant)
                         {
-                            <a asp-controller="MessageFromTenants" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Talk to Manager</a>
+                            <a asp-controller="MessageFromTenants" asp-action="StartConversation" asp-route-apartmentId="@item.ApartmentId">Talk to Manager</a>
                             <text> | </text>
                             <a asp-controller="Appointments" asp-action="Create" asp-route-apartmentId="@item.ApartmentId">Ask for a visit</a>
 

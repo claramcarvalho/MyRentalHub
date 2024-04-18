@@ -12,6 +12,7 @@ namespace RentalProperties.DATA
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<Property> Properties { get; set; }
         public DbSet<Apartment> Apartments { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
         public DbSet<MessageFromTenant> MessagesFromTenants { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<EventInProperty> EventsInProperties { get; set; }
@@ -49,16 +50,21 @@ namespace RentalProperties.DATA
                     .HasForeignKey(d => d.PropertyId);
             });
 
-            modelBuilder.Entity<MessageFromTenant>(entity =>
+            modelBuilder.Entity<Conversation>(entity =>
             {
-                entity.Property(e => e.AnswerFromManager).HasColumnType("text");
-                entity.Property(e => e.MessageSent).HasColumnType("text");
-
-                entity.HasOne(d => d.Apartment).WithMany(m => m.Messages)
+                entity.HasOne(d => d.Apartment).WithMany(m => m.Conversations)
                     .HasForeignKey(d => d.ApartmentId);
 
-                entity.HasOne(d => d.Tenant).WithMany(m => m.Messages)
+                entity.HasOne(d => d.Tenant).WithMany(m => m.Conversations)
                     .HasForeignKey(d => d.TenantId);
+            });
+
+            modelBuilder.Entity<MessageFromTenant>(entity =>
+            {
+                entity.Property(e => e.MessageSent).HasColumnType("text");
+
+                entity.HasOne(d => d.Conversation).WithMany(m => m.Messages)
+                    .HasForeignKey(d => d.ConversationId);
             });
 
             modelBuilder.Entity<Appointment>(entity =>

@@ -8,23 +8,23 @@ namespace RentalProperties.Models
         [Key]
         public int MessageId { get; set; }
 
-        [DisplayName("Tenant")]
-        public int TenantId { get; set; }
+        [DisplayName("Conversation")]
+        public int ConversationId {  get; set; }
+
+        [DisplayName("Conversation")]
+        public virtual Conversation? Conversation { get; set; }
+
+        [DisplayName("Message")]
+        public string? MessageSent { get; set; } = null!;
         
-        [DisplayName("Tenant")]
-        public virtual UserAccount? Tenant { get; set; }
+        [DisplayName("Date Sent")]
+        public DateTime DateSent { get; set; }
 
-        [DisplayName("Apartment")]
-        public int ApartmentId { get; set; }
+        [DisplayName("Type of Author")] 
+        public UserType AuthorType { get; set; }
 
-        [DisplayName("Apartment")]
-        public virtual Apartment? Apartment { get; set; }
-
-        [DisplayName("Message from Tenant")]
-        public string MessageSent { get; set; } = null!;
-
-        [DisplayName("Answer from Manager")]
-        public string? AnswerFromManager { get; set; } = null!;
-
+        [DisplayName("Name of Author")]
+        public string? AuthorName {  get; set; }
     }
 }
+

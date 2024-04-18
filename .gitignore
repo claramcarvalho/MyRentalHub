@@ -21,3 +21,5 @@
 /RentalProperties/Migrations/20240417191149_recreatingSlot.Designer.cs
 /RentalProperties/Migrations/20240417201526_correctingSlots.cs
 /RentalProperties/Migrations/20240417201526_correctingSlots.Designer.cs
+/RentalProperties/appsettings.json
+/RentalProperties/Migrations/RentalPropertiesDBContextModelSnapshot.cs

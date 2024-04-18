@@ -81,3 +81,15 @@
 .scrollable-container {
     overflow-x:auto;
 }
+
+.message-box {
+    min-height:50vh;
+}
+
+.max-width-75 {
+    max-width:75%
+}
+
+.text-author-message {
+    font-size:10px;
+}

@@ -1,0 +1,16 @@
+﻿@model RentalProperties.Models.MessageFromTenant
+@{
+}
+
+<form asp-action="Create" enctype="multipart/form-data" method="post">
+    <div class="d-flex flex-column w-100 align-items-end">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="w-100 py-2">
+            <input asp-for="ConversationId" hidden/>
+            <textarea asp-for="MessageSent" type="text" class="w-100 " rows="2"></textarea>
+        </div>
+        <div class="align-self-end">
+            <input type="submit" value="Send" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
