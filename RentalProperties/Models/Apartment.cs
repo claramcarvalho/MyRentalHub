@@ -39,7 +39,7 @@ namespace RentalProperties.Models
         public bool AnimalsAccepted { get; set; }
 
         [NotMapped]
-        public virtual ICollection<MessageFromTenant> Messages { get; set; } = new List<MessageFromTenant>();
+        public virtual ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
         
         [NotMapped]
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

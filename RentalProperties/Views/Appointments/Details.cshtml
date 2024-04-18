@@ -36,7 +36,7 @@
             @Html.DisplayFor(model => model.Apartment.ApartmentNumber)
         </dd>
         <dd class="col-sm-8">
-            <a asp-controller="MessageFromTenants" asp-action="Create" asp-route-apartmentId="@Model.Apartment.ApartmentId">Send a Message to the Manager</a>
+            <a asp-controller="MessageFromTenants" asp-action="StartConversation" asp-route-apartmentId="@Model.Apartment.ApartmentId">Send a Message to the Manager</a>
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.VisitDate)

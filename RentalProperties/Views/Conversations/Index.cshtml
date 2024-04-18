@@ -1,0 +1,44 @@
+﻿@model IEnumerable<RentalProperties.Models.Conversation>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Conversations</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Tenant)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apartment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apartment.Property)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tenant.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apartment.ApartmentNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apartment.Property.PropertyName)
+            </td>
+            <td>
+                <a asp-controller="MessageFromTenants" asp-action="Index" asp-route-conversationId="@item.ConversationId">View Messages</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

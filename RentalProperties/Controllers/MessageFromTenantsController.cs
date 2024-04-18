@@ -22,47 +22,62 @@ namespace RentalProperties.Controllers
             _context = context;
         }
 
-        // GET: MessageFromTenants
-        public async Task<IActionResult> Index()
+        // GET: MessageFromTenants/Index/1
+        [HttpGet("MessageFromTenants/Index/{conversationId}")]
+        public async Task<IActionResult> Index(int conversationId)
         {
-            var rentalPropertiesDBContext = _context.MessagesFromTenants.Include(m => m.Apartment).ThenInclude(a=>a.Property).Include(m => m.Tenant).ToList();
-
-            var currentUser = HttpContext.User;
-            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if (await RentalWebsite.UserHasPolicy(HttpContext,"MustBeTenant"))
+            if (conversationId == null)
             {
-                rentalPropertiesDBContext = rentalPropertiesDBContext.Where(u => u.TenantId == userId).ToList();
-            } else if (await RentalWebsite.UserHasPolicy(HttpContext, "MustBeManager"))
-            {
-                rentalPropertiesDBContext = rentalPropertiesDBContext.Where(r => r.Apartment.Property.ManagerId == userId).ToList();
+                return NotFound();
             }
-            return View(rentalPropertiesDBContext);
+
+            var messages = _context.MessagesFromTenants.Where(m=>m.ConversationId == conversationId).AsQueryable();
+            
+            ConversationWithMessages conversationToOpen = new ConversationWithMessages();
+            conversationToOpen.AllMessages = await messages.ToListAsync();
+            var newMessage = new MessageFromTenant();
+            newMessage.ConversationId = conversationId;
+            conversationToOpen.newMessage = newMessage;
+
+            var apartId = _context.Conversations.Where(c => c.ConversationId == conversationId).First().ApartmentId;
+            var apartNumber = _context.Apartments.First(a => a.ApartmentId == apartId).ApartmentNumber;
+            var propertyName = _context.Apartments.Include(a=>a.Property).First(a => a.ApartmentId == apartId).Property.PropertyName;
+
+            ViewData["apNb"] = apartNumber;
+            ViewData["PropName"] = propertyName;
+            return View(conversationToOpen);
         }
 
-        /*
-        // GET: MessageFromTenants/Details/5
-        public async Task<IActionResult> Details(int? id)
+        //GET : MessageFromTenants/StartConversation/1
+        public async Task<IActionResult> StartConversation(int apartmentId)
         {
-            if (id == null)
+            if (await RentalWebsite.UserHasPolicy(HttpContext, "MustBeTenant"))
+            {
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+
+                var pastMessages = _context.Conversations.FirstOrDefault(c => c.TenantId == userId && c.ApartmentId == apartmentId);
+                if (pastMessages == null)
+                {
+                    Conversation newConversation = new Conversation();
+                    newConversation.TenantId = userId;
+                    newConversation.ApartmentId = apartmentId;
+                    _context.Add(newConversation);
+                    await _context.SaveChangesAsync();
+                }
+
+                int convId = _context.Conversations.FirstOrDefault(c => c.TenantId == userId && c.ApartmentId == apartmentId).ConversationId;
+                return RedirectToAction("Index", "MessageFromTenants", new { conversationId = convId });
+            }
+            else
             {
                 return NotFound();
             }
+        }
 
-            var messageFromTenant = await _context.MessagesFromTenants
-                .Include(m => m.Apartment)
-                .Include(m => m.Tenant)
-                .FirstOrDefaultAsync(m => m.MessageId == id);
-            if (messageFromTenant == null)
-            {
-                return NotFound();
-            }
-
-            return View(messageFromTenant);
-        } */
-
-        // GET: MessageFromTenants/Create
-        [HttpGet("MessageFromTenants/Create")]
-        [Authorize(Policy = "MustBeTenant")]
+            // GET: MessageFromTenants/Create
+            [HttpGet("MessageFromTenants/Create")]
         public IActionResult Create(int apartmentId)
         {
             ViewData["ApartmentId"] = new SelectList(_context.Apartments.Where(a => a.ApartmentId == apartmentId), "ApartmentId", "ApartmentNumber");
@@ -77,20 +92,27 @@ namespace RentalProperties.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize(Policy = "MustBeTenant")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MessageId,TenantId,ApartmentId,MessageSent,AnswerFromManager")] MessageFromTenant messageFromTenant)
+        public async Task<IActionResult> Create([Bind("MessageId,ConversationId,MessageSent")] MessageFromTenant newMessage)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(messageFromTenant);
+                //Settin Message
+                newMessage.DateSent = DateTime.Now;
+
+                //setting Author
+                var currentUser = HttpContext.User;
+                int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var user = _context.UserAccounts.FirstOrDefault(u => u.UserId == userId);
+                newMessage.AuthorName = user.FullName;
+                newMessage.AuthorType = user.UserType;
+
+                _context.Add(newMessage);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","MessageFromTenants",new { conversationId = newMessage.ConversationId});
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments.Where(a => a.ApartmentId == messageFromTenant.ApartmentId), "ApartmentId", "ApartmentNumber");
-            var currentUser = HttpContext.User;
-            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts.Where(u => u.UserId == userId), "UserId", "FullName"); return View(messageFromTenant);
+
+            return View(newMessage);
         }
 
         // GET: MessageFromTenants/Edit/5
@@ -102,26 +124,15 @@ namespace RentalProperties.Controllers
             }
 
             var messageFromTenant = _context.MessagesFromTenants
-                .Include(m=>m.Tenant)
-                .Include(m=>m.Apartment).ThenInclude(a=>a.Property)
                 .FirstOrDefault(m=>m.MessageId==id);
             if (messageFromTenant == null)
             {
                 return NotFound();
             }
-            if (! await MessageFromTenantOrForManager(messageFromTenant))
-            {
-                return RedirectToAction("AccessDenied", "Home");
-            }
-            if (messageFromTenant.AnswerFromManager != null)
-            {
-                ViewData["ErrorMessage"] = "You can only edit messages that were not replied.";
-                ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentNumber", messageFromTenant.ApartmentId);
-                ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "FullName", messageFromTenant.TenantId);
-                return View(messageFromTenant);
-            }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentNumber", messageFromTenant.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "FullName", messageFromTenant.TenantId);
+            //if (! await MessageFromTenantOrForManager(messageFromTenant))
+            //{
+            //    return RedirectToAction("AccessDenied", "Home");
+            //}
             return View(messageFromTenant);
         }
 
@@ -157,8 +168,6 @@ namespace RentalProperties.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApartmentId"] = new SelectList(_context.Apartments, "ApartmentId", "ApartmentNumber", messageFromTenant.ApartmentId);
-            ViewData["TenantId"] = new SelectList(_context.UserAccounts, "UserId", "FullName", messageFromTenant.TenantId);
             return View(messageFromTenant);
         }
 
@@ -172,8 +181,6 @@ namespace RentalProperties.Controllers
             }
 
             var messageFromTenant = await _context.MessagesFromTenants
-                .Include(m => m.Apartment)
-                .Include(m => m.Tenant)
                 .FirstOrDefaultAsync(m => m.MessageId == id);
             if (messageFromTenant == null)
             {
@@ -204,18 +211,18 @@ namespace RentalProperties.Controllers
             return _context.MessagesFromTenants.Any(e => e.MessageId == id);
         }
 
-        private async Task<bool> MessageFromTenantOrForManager(MessageFromTenant message)
-        {
-            var currentUser = HttpContext.User;
-            int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+        //private async Task<bool> MessageFromTenantOrForManager(MessageFromTenant message)
+        //{
+        //    var currentUser = HttpContext.User;
+        //    int userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            if (message.TenantId == userId || 
-                message.Apartment.Property.ManagerId == userId ||
-                await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
-            {
-                return true;
-            }
-            return false;
-        }
+        //    if (message.TenantId == userId || 
+        //        message.Apartment.Property.ManagerId == userId ||
+        //        await RentalWebsite.UserHasPolicy(HttpContext,"MustBeOwnerOrAdministrator"))
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
     }
 }

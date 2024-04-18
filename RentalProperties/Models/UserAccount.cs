@@ -53,7 +53,7 @@ namespace RentalProperties
         public string FullName => $"{FirstName} {LastName}";
 
         [NotMapped]
-        public virtual ICollection<MessageFromTenant>? Messages { get; set; } = new List<MessageFromTenant>();
+        public virtual ICollection<Conversation>? Conversations { get; set; } = new List<Conversation>();
         
         [NotMapped]
         public virtual ICollection<Appointment>? Appointments { get; set; } = new List<Appointment>();
