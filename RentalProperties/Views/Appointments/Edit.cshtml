@@ -22,12 +22,10 @@
             <div class="form-group">
                 <label asp-for="ApartmentId" class="control-label"></label>
                 <select asp-for="ApartmentId" class="form-control" asp-items="ViewBag.ApartmentId"></select>
-                <span asp-validation-for="ApartmentId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="VisitDate" class="control-label"></label>
-                <input type="date" asp-for="VisitDate" class="form-control" />
-                <span asp-validation-for="VisitDate" class="text-danger"></span>
+                <label for="slotId" class="control-label">Date and Time of Visit</label>
+                <select name="slotId" class="form-control" asp-items="ViewBag.AvailableSpots"></select>
             </div>
             <input type="hidden" id="confirmationStatus" name="confirmationStatus" value="false" />
             <div class="form-group">

@@ -75,8 +75,8 @@ namespace RentalProperties.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("VisitDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("VisitDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("AppointmentId");
 
@@ -120,6 +120,30 @@ namespace RentalProperties.Migrations
                     b.HasIndex("PropertyId");
 
                     b.ToTable("EventsInProperties");
+                });
+
+            modelBuilder.Entity("RentalProperties.Models.ManagerSlot", b =>
+                {
+                    b.Property<int>("SlotId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SlotId"));
+
+                    b.Property<DateTime>("AvailableSlot")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAlreadyScheduled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ManagerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SlotId");
+
+                    b.HasIndex("ManagerId");
+
+                    b.ToTable("ManagerSlots");
                 });
 
             modelBuilder.Entity("RentalProperties.Models.MessageFromTenant", b =>
@@ -313,6 +337,17 @@ namespace RentalProperties.Migrations
                     b.Navigation("Property");
                 });
 
+            modelBuilder.Entity("RentalProperties.Models.ManagerSlot", b =>
+                {
+                    b.HasOne("RentalProperties.UserAccount", "Manager")
+                        .WithMany("ManagerSlots")
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Manager");
+                });
+
             modelBuilder.Entity("RentalProperties.Models.MessageFromTenant", b =>
                 {
                     b.HasOne("RentalProperties.Models.Apartment", "Apartment")
@@ -383,6 +418,8 @@ namespace RentalProperties.Migrations
             modelBuilder.Entity("RentalProperties.UserAccount", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("ManagerSlots");
 
                     b.Navigation("Messages");
 

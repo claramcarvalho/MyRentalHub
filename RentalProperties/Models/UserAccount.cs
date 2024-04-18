@@ -62,7 +62,7 @@ namespace RentalProperties
         public virtual ICollection<Rental>? Rentals { get; set; } = new List<Rental>();
 
         [NotMapped]
-        public virtual ICollection<ManagerAvailability>? ManagerAvailabilities { get; set; } = new List<ManagerAvailability>();
+        public virtual ICollection<ManagerSlot>? ManagerSlots { get; set; } = new List<ManagerSlot>();
     }
 
     public enum UserType

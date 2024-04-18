@@ -1,0 +1,56 @@
+﻿@model RentalProperties.Models.ManagerSlot
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Insert New Availabilities</h1>
+
+<h4>Slots</h4>
+<hr />
+@if (ViewData["ErrorMessage"] != null)
+{
+    List<string> errors = (List<string>)ViewData["ErrorMessage"];
+    foreach (string error in errors)
+    {
+        <div class="text-danger">
+            @error
+        </div>
+    }
+}
+<div class="row">
+    <span>Slots will be created every hour, until the end hour, in all dates selected!</span>
+    <br />
+    <div class="col-md-4">
+        <form asp-action="Insert">
+            <div class="form-group">
+                <label asp-for="ManagerId" class="control-label"></label>
+                <select asp-for="ManagerId" class="form-control" asp-items="ViewBag.ManagerId"></select>
+            </div>
+            <div class="form-group">
+                <label for="firstDate" class="control-label">First Day to open new slots:</label>
+                <input type="date" name="firstDate" id="firstDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="lastDate" class="control-label">Last Day to open new slots:</label>
+                <input type="date" name="lastDate" id="lastDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="begin" class="control-label">Begin Hour:</label>
+                <input type="time" name="begin" id="begin" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="end" class="control-label">End Hour:</label>
+                <input type="time" name="end" id="end" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Insert" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
