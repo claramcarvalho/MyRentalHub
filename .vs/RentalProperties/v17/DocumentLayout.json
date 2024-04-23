@@ -3,20 +3,16 @@
   "WorkspaceRootPath": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\apartments\\timeline.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\apartments\\timeline.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\messagefromtenants\\newmessage.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\messagefromtenants\\newmessage.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\apartments\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\apartments\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\messagefromtenants\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\messagefromtenants\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\controllers\\apartmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\controllers\\apartmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\controllers\\rentalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\controllers\\rentalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\controllers\\useraccountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -25,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\useraccounts\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\useraccounts\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\views\\identity\\signup.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|solutionrelative:rentalproperties\\views\\identity\\signup.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{85CFC42B-437C-4B66-99F7-97CE1AF5EFC9}|RentalProperties\\RentalProperties.csproj|c:\\files\\lasalle\\cursos\\winter_2024\\web_server\\final project\\rentalproperties\\rentalproperties\\controllers\\propertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 190,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,33 +50,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "RentalsController.cs",
-              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Controllers\\RentalsController.cs",
-              "RelativeDocumentMoniker": "RentalProperties\\Controllers\\RentalsController.cs",
-              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Controllers\\RentalsController.cs",
-              "RelativeToolTip": "RentalProperties\\Controllers\\RentalsController.cs",
-              "ViewState": "AQIAAEoCAAAAAAAAAADwvwAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-18T22:21:52.786Z",
+              "DocumentIndex": 0,
+              "Title": "NewMessage.cshtml",
+              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\MessageFromTenants\\NewMessage.cshtml",
+              "RelativeDocumentMoniker": "RentalProperties\\Views\\MessageFromTenants\\NewMessage.cshtml",
+              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\MessageFromTenants\\NewMessage.cshtml",
+              "RelativeToolTip": "RentalProperties\\Views\\MessageFromTenants\\NewMessage.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAABOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-04-22T20:15:57.581Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\MessageFromTenants\\Index.cshtml",
+              "RelativeDocumentMoniker": "RentalProperties\\Views\\MessageFromTenants\\Index.cshtml",
+              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\MessageFromTenants\\Index.cshtml",
+              "RelativeToolTip": "RentalProperties\\Views\\MessageFromTenants\\Index.cshtml",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-04-22T20:15:49.834Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "ApartmentsController.cs",
-              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Controllers\\ApartmentsController.cs",
-              "RelativeDocumentMoniker": "RentalProperties\\Controllers\\ApartmentsController.cs",
-              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Controllers\\ApartmentsController.cs",
-              "RelativeToolTip": "RentalProperties\\Controllers\\ApartmentsController.cs",
-              "ViewState": "AQIAABMBAAAAAAAAAAAYwCMBAAAMAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-18T22:21:11.232Z",
-              "EditorCaption": ""
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "RentalProperties\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "RentalProperties\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AQIAABsAAAAAAAAAAAAAAB0AAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-04-22T17:12:16.511Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\UserAccounts\\Edit.cshtml",
               "RelativeDocumentMoniker": "RentalProperties\\Views\\UserAccounts\\Edit.cshtml",
@@ -92,12 +95,11 @@
               "RelativeToolTip": "RentalProperties\\Views\\UserAccounts\\Edit.cshtml",
               "ViewState": "AQIAAA8AAAAAAAAAAAAAADcAAAASAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-04-18T22:11:54.922Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-18T22:11:54.922Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 5,
               "Title": "PropertiesController.cs",
               "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Controllers\\PropertiesController.cs",
               "RelativeDocumentMoniker": "RentalProperties\\Controllers\\PropertiesController.cs",
@@ -105,12 +107,11 @@
               "RelativeToolTip": "RentalProperties\\Controllers\\PropertiesController.cs",
               "ViewState": "AQIAALsAAAAAAAAAAAAAwNEAAABFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-18T22:10:32.87Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-18T22:10:32.87Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 6,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\UserAccounts\\Create.cshtml",
               "RelativeDocumentMoniker": "RentalProperties\\Views\\UserAccounts\\Create.cshtml",
@@ -118,12 +119,11 @@
               "RelativeToolTip": "RentalProperties\\Views\\UserAccounts\\Create.cshtml",
               "ViewState": "AQIAABYAAAAAAAAAAADwvywAAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-04-18T22:05:15.09Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-18T22:05:15.09Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "UserAccountsController.cs",
               "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Controllers\\UserAccountsController.cs",
               "RelativeDocumentMoniker": "RentalProperties\\Controllers\\UserAccountsController.cs",
@@ -131,53 +131,7 @@
               "RelativeToolTip": "RentalProperties\\Controllers\\UserAccountsController.cs",
               "ViewState": "AQIAAEgAAAAAAAAAAAAowG4AAAB2AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-18T22:04:25.565Z",
-              "EditorCaption": ""
-            }
-          ]
-        },
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 1,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Details.cshtml",
-              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Apartments\\Details.cshtml",
-              "RelativeDocumentMoniker": "RentalProperties\\Views\\Apartments\\Details.cshtml",
-              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Apartments\\Details.cshtml",
-              "RelativeToolTip": "RentalProperties\\Views\\Apartments\\Details.cshtml",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAABoAAABnAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-04-18T22:28:55.194Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Timeline.cshtml",
-              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Apartments\\Timeline.cshtml",
-              "RelativeDocumentMoniker": "RentalProperties\\Views\\Apartments\\Timeline.cshtml",
-              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Apartments\\Timeline.cshtml",
-              "RelativeToolTip": "RentalProperties\\Views\\Apartments\\Timeline.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAEAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-04-18T22:23:39.884Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "SignUp.cshtml",
-              "DocumentMoniker": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Identity\\SignUp.cshtml",
-              "RelativeDocumentMoniker": "RentalProperties\\Views\\Identity\\SignUp.cshtml",
-              "ToolTip": "C:\\Files\\LaSalle\\Cursos\\Winter_2024\\Web_Server\\Final Project\\RentalProperties\\RentalProperties\\Views\\Identity\\SignUp.cshtml",
-              "RelativeToolTip": "RentalProperties\\Views\\Identity\\SignUp.cshtml",
-              "ViewState": "AQIAACEAAAAAAAAAAAAAAEAAAAASAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-04-18T22:05:24.359Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-18T22:04:25.565Z"
             }
           ]
         }
